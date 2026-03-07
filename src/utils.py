@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 
-def prepare_text_data(texts, labels, max_features=1000, test_size=0.2, val_size=0.1, random_state=42, use_stratify=True):
+def prepare_text_data(texts, labels, max_features=1024, test_size=0.2, val_size=0.1, random_state=42, use_stratify=True):
     """
     Transforma textos em matrizes TF-IDF, faz o One-Hot Encoding das labels 
     e divide os dados em Treino, Validação e Teste.

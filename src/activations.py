@@ -21,12 +21,12 @@ def relu(x):
     return np.maximum(0, x)
 
 def relu_derivative(x):
-    return np.where(x >= 0, 1, 0)
+    return (x > 0).astype(float)
 
 def softmax(x):
-    # Usamos o max para estabilidade numérica
-    exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
-    return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+    # A estabilidade numérica é crítica para as 5 classes
+    exps = np.exp(x - np.max(x, axis=1, keepdims=True))
+    return exps / np.sum(exps, axis=1, keepdims=True)
 
 # Classes prontas a usar na rede
 class ReLUActivation(ActivationLayer):

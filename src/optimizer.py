@@ -3,24 +3,24 @@ import numpy as np
 class SGD:
     def __init__(self, learning_rate=0.01, momentum=0.9):
         """
-        Inicializa o otimizador SGD com Momentum.
+        Inicializa o otimizador SGD com Momentum Clássico.
         """
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.retained_gradient = None # Acumula o gradiente de épocas anteriores
+        self.retained_gradient = None 
 
     def update(self, weights, gradient):
         """
-        Atualiza o gradiente retido, calcula e devolve os pesos atualizados.
+        Atualiza os pesos usando a fórmula standard de Machine Learning.
         """
-        # Inicializa o retained_gradient a zeros na primeira iteração
         if self.retained_gradient is None:
             self.retained_gradient = np.zeros_like(weights)
         
-        # Vt = beta * V_{t-1} + (1 - beta) * gradient
-        self.retained_gradient = (self.momentum * self.retained_gradient) + ((1 - self.momentum) * gradient)
+        # Fórmula standard (sem o 1 - momentum): 
+        # V = (momentum * V) + gradiente
+        self.retained_gradient = (self.momentum * self.retained_gradient) + gradient
         
-        # Wt = W_{t-1} - alpha * Vt
+        # W = W - (learning_rate * V)
         updated_weights = weights - (self.learning_rate * self.retained_gradient)
         
         return updated_weights

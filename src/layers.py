@@ -15,10 +15,15 @@ class Layer:
 class DenseLayer(Layer):
     def __init__(self, input_shape, n_units, learning_rate=0.01, momentum=0.9):
         super().__init__()
-        self.weights = np.random.randn(input_shape, n_units) * 0.01
+    
+    
+        limit = np.sqrt(6 / (input_shape + n_units))
+        self.weights = np.random.uniform(-limit, limit, (input_shape, n_units))
         self.biases = np.zeros((1, n_units))
-        
-        # Instanciamos um otimizador para os pesos e outro para os biases
+    
+        self.learning_rate = learning_rate
+        self.momentum = momentum
+    
         self.weights_optimizer = SGD(learning_rate, momentum)
         self.biases_optimizer = SGD(learning_rate, momentum)
 
