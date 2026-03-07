@@ -24,9 +24,13 @@ def processar_texto(lista_ou_str):
 
 def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
     pasta_destino = f"../data/raw/{dataset_ref.split('/')[1]}"
-    if not os.path.exists(pasta_destino): return [], []
+    if not os.path.exists(pasta_destino): 
+        print(f"   ⚠️ Pasta Kaggle não encontrada: {pasta_destino}")
+        return [], []
     ficheiros_csv = glob.glob(f"{pasta_destino}/*.csv")
-    if not ficheiros_csv: return [], []
+    if not ficheiros_csv: 
+        print(f"   ⚠️ Nenhum CSV encontrado na pasta: {pasta_destino}")
+        return [], []
         
     df = pd.read_csv(ficheiros_csv[0]) 
     textos_human, textos_ia = [], []
@@ -34,9 +38,9 @@ def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
     col_label = next((c for c in df.columns if any(x in c.lower() for x in ['label', 'generated', 'source'])), None)
             
     for _, row in df.iterrows():
-        texto = processar_texto(str(row[col_texto]))
+        texto = processar_texto(str(row.get(col_texto, '')))
         if len(texto) < 50: continue
-        valor_label = str(row[col_label]).lower()
+        valor_label = str(row.get(col_label, '')).lower()
         if str(classe_humano).lower() in valor_label or valor_label == '0': textos_human.append(texto)
         elif str(classe_ia).lower() in valor_label or valor_label == '1': textos_ia.append(texto)
             
@@ -46,14 +50,16 @@ def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
 if __name__ == "__main__":
     os.makedirs('../data', exist_ok=True)
     dados_por_modelo = {classe: [] for classe in CLASSES_ALVO}
-    print("🚀 A recuperar e equilibrar o Dataset Multi-Classes...\n")
+    print("🚀 A recuperar o Dataset Multi-Classes...\n")
 
-    # 1. Files Locais (HC3 e NicolaiSivesind)
+    # 1. Local
     print("-> A ler HC3 Local (all.jsonl)...")
     if os.path.exists('../data/raw/all.jsonl'):
         df_hc3 = pd.read_json('../data/raw/all.jsonl', lines=True)
         for text in df_hc3['human_answers']: dados_por_modelo['human'].append(processar_texto(text))
         for text in df_hc3['chatgpt_answers']: dados_por_modelo['openai'].append(processar_texto(text))
+    else:
+        print("   ⚠️ ERRO: Ficheiro all.jsonl não encontrado na pasta ../data/raw/")
 
     print("-> A ler NicolaiSivesind Local (research-abstracts-labeled.csv)...")
     if os.path.exists('../data/raw/research-abstracts-labeled.csv'):
@@ -64,8 +70,10 @@ if __name__ == "__main__":
             lbl = str(row.get('label', row.get('source', ''))).lower()
             if lbl == '0' or 'human' in lbl: dados_por_modelo['human'].append(texto)
             elif lbl == '1' or 'machine' in lbl or 'ai' in lbl: dados_por_modelo['openai'].append(texto)
+    else:
+        print("   ⚠️ ERRO: Ficheiro research-abstracts-labeled.csv não encontrado!")
 
-    # 2. HuggingFace
+    # 2. Hugging Face 
     print("-> A extrair do OpenTuringBench (Meta, Google, Mistral)...")
     try:
         ds_turing = load_dataset("MLNTeam-Unical/OpenTuringBench", "in_domain", split="train[:5000]")
@@ -90,8 +98,8 @@ if __name__ == "__main__":
     dados_por_modelo['human'].extend(h_text2)
     dados_por_modelo['openai'].extend(ia_text2)
 
-    # 4. Resumo bruto e limpeza final 
-    print("\nResumo:")
+    # 4. Resumo
+    print("\n--- Resumo Bruto ---")
     dataframes_finais = []
     
     for modelo, textos in dados_por_modelo.items():
@@ -103,13 +111,22 @@ if __name__ == "__main__":
 
     if dataframes_finais:
         df_mestre = pd.concat(dataframes_finais, ignore_index=True)
-    
-        print("\n⚖️ A equilibrar o dataset para a rede neuronal...")
-        tamanho_minimo = df_mestre['label'].value_counts().min()
-        print(f"-> A cortar todas as classes para ficarem com {tamanho_minimo} frases exatas.")
         
-        df_equilibrado = df_mestre.groupby('label').sample(n=tamanho_minimo, random_state=42)
-        df_equilibrado = df_equilibrado.sample(frac=1, random_state=42).reset_index(drop=True)
+        EQUILIBRAR_DADOS = True
         
-        df_equilibrado.to_csv('../data/dataset.csv', index=False)
-        print(f"\n🚀 SUCESSO! O dataset.csv final foi guardado e está perfeitamente equilibrado!")
+        if EQUILIBRAR_DADOS:
+            print("\n⚖️ Opção true: A equilibrar o dataset para a rede neuronal...")
+            tamanho_minimo = df_mestre['label'].value_counts().min()
+            print(f"-> A cortar todas as classes para ficarem com {tamanho_minimo} frases exatas.")
+            
+            df_final = df_mestre.groupby('label').sample(n=tamanho_minimo, random_state=42)
+            df_final = df_final.sample(frac=1, random_state=42).reset_index(drop=True)
+            
+            print(f"\n🚀 Sucesso! Dataset guardado e perfeitamente equilibrado ({tamanho_minimo} por classe).")
+            
+        else:
+            print("\n⚠️ Opção false: A guardar o dataset com TODAS as frases (Desequilibrado)...")
+            df_final = df_mestre.sample(frac=1, random_state=42).reset_index(drop=True)
+            print(f"\n🚀 Sucesso! Dataset guardado com um total de {len(df_final)} frases!")
+        
+        df_final.to_csv('../data/dataset.csv', index=False)
