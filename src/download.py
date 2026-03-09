@@ -9,14 +9,18 @@ warnings.filterwarnings('ignore')
 CLASSES_ALVO = ['human', 'openai', 'meta', 'google', 'anthropic']
 
 def processar_texto(texto):
-    """
-    Limpa o texto e garante a regra do professor: 
-    Textos têm de ter rigorosamente entre 80 e 120 palavras.
-    """
-    if not isinstance(texto, str): return ""
-    texto = re.sub(r'\s+', ' ', texto).strip()
+    """Limpa o texto, resolve listas e aplica a Regra das 80-120 Palavras"""
+    # 1. CORREÇÃO: Lidar com o formato de Lista do HC3 (all.jsonl)
+    if isinstance(texto, (list, tuple)):
+        texto = texto[0] if len(texto) > 0 else ""
+        
+    if pd.isna(texto) or not isinstance(texto, str): 
+        return ""
+        
+    texto = re.sub(r'\s+', ' ', str(texto)).strip()
     palavras = texto.split()
     
+    # 2. Regra Implacável do Professor
     if len(palavras) < 80: 
         return ""
         
@@ -24,7 +28,6 @@ def processar_texto(texto):
         palavras = palavras[:100]
         
     texto_final = " ".join(palavras)
-    
     if not texto_final.endswith(('.', '!', '?')):
         texto_final += "."
         
@@ -42,8 +45,11 @@ def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
     col_label = next((c for c in df.columns if any(x in c.lower() for x in ['label', 'generated', 'source'])), None)
             
     for _, row in df.iterrows():
-        texto = processar_texto(str(row.get(col_texto, '')))
-        if not texto: continue
+        # Captura o texto de forma segura
+        texto_cru = row.get(col_texto, '')
+        texto = processar_texto(texto_cru)
+        
+        if not texto: continue 
         
         valor_label = str(row.get(col_label, '')).lower()
         if str(classe_humano).lower() in valor_label or valor_label == '0': textos_human.append(texto)
@@ -56,6 +62,7 @@ if __name__ == "__main__":
     os.makedirs('../data', exist_ok=True)
     dados_por_modelo = {classe: [] for classe in CLASSES_ALVO}
     print("🚀 A construir o Dataset com Regra de 80-120 Palavras...\n")
+
     print("-> A ler Dataset de Exemplos do Professor (dataset-exemplos.csv)...")
     if os.path.exists('../data/raw/dataset-exemplos.csv'):
         df_prof = pd.read_csv('../data/raw/dataset-exemplos.csv', sep=';')
@@ -68,14 +75,12 @@ if __name__ == "__main__":
                 if classe in lbl:
                     dados_por_modelo[classe].append(texto)
                     break
-    else:
-        print("   ⚠️ Ficheiro dataset-exemplos.csv não encontrado na pasta raw!")
 
     print("-> A ler HC3 Local (all.jsonl)...")
     if os.path.exists('../data/raw/all.jsonl'):
         df_hc3 = pd.read_json('../data/raw/all.jsonl', lines=True)
-        for text in df_hc3['human_answers']: dados_por_modelo['human'].append(processar_texto(text))
-        for text in df_hc3['chatgpt_answers']: dados_por_modelo['openai'].append(processar_texto(text))
+        for text in df_hc3.get('human_answers', []): dados_por_modelo['human'].append(processar_texto(text))
+        for text in df_hc3.get('chatgpt_answers', []): dados_por_modelo['openai'].append(processar_texto(text))
 
     print("-> A extrair do OpenTuringBench (Meta, Google, Anthropic)...")
     try:
@@ -95,12 +100,12 @@ if __name__ == "__main__":
     dados_por_modelo['human'].extend(h_text)
     dados_por_modelo['openai'].extend(ia_text)
 
-    # 4. Resumo
+    # RESUMO E BALANCEAMENTO FINAL
     print("\n--- Resumo Bruto ---")
     dataframes_finais = []
     
     for modelo, textos in dados_por_modelo.items():
-        textos_unicos = list(set(textos)) # Remove repetidos
+        textos_unicos = list(set(textos))
         if len(textos_unicos) > 0:
             df_modelo = pd.DataFrame({'text': textos_unicos, 'label': modelo})
             dataframes_finais.append(df_modelo)
@@ -109,8 +114,8 @@ if __name__ == "__main__":
     if dataframes_finais:
         df_mestre = pd.concat(dataframes_finais, ignore_index=True)
         
-        # 🎛️ Painel de Controlo
-        EQUILIBRAR_DADOS = False  # True = Cortar pelo mínimo | False = Guardar tudo
+        # Deixado como FALSE para não cortar tudo pelos 23 do Anthropic
+        EQUILIBRAR_DADOS = False  
         
         if EQUILIBRAR_DADOS:
             tamanho_minimo = df_mestre['label'].value_counts().min()
