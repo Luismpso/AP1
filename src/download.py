@@ -6,31 +6,35 @@ from datasets import load_dataset
 import warnings
 warnings.filterwarnings('ignore') 
 
-CLASSES_ALVO = ['human', 'openai', 'meta', 'google', 'mistral']
+CLASSES_ALVO = ['human', 'openai', 'meta', 'google', 'anthropic']
 
-def clean_and_shorten(text, target_length=110):
-    if not isinstance(text, str) or len(text.strip()) < 20: return ""
-    text = re.sub(r'\s+', ' ', text).strip()
-    if len(text) > target_length:
-        shortened = text[:target_length]
-        last_space = shortened.rfind(' ')
-        return shortened[:last_space] + "." if last_space > 0 else shortened + "."
-    return text
-
-def processar_texto(lista_ou_str):
-    if isinstance(lista_ou_str, (list, tuple)):
-        return clean_and_shorten(lista_ou_str[0]) if len(lista_ou_str) > 0 else ""
-    return clean_and_shorten(lista_ou_str)
+def processar_texto(texto):
+    """
+    Limpa o texto e garante a regra do professor: 
+    Textos têm de ter rigorosamente entre 80 e 120 palavras.
+    """
+    if not isinstance(texto, str): return ""
+    texto = re.sub(r'\s+', ' ', texto).strip()
+    palavras = texto.split()
+    
+    if len(palavras) < 80: 
+        return ""
+        
+    if len(palavras) > 120:
+        palavras = palavras[:100]
+        
+    texto_final = " ".join(palavras)
+    
+    if not texto_final.endswith(('.', '!', '?')):
+        texto_final += "."
+        
+    return texto_final
 
 def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
     pasta_destino = f"../data/raw/{dataset_ref.split('/')[1]}"
-    if not os.path.exists(pasta_destino): 
-        print(f"   ⚠️ Pasta Kaggle não encontrada: {pasta_destino}")
-        return [], []
+    if not os.path.exists(pasta_destino): return [], []
     ficheiros_csv = glob.glob(f"{pasta_destino}/*.csv")
-    if not ficheiros_csv: 
-        print(f"   ⚠️ Nenhum CSV encontrado na pasta: {pasta_destino}")
-        return [], []
+    if not ficheiros_csv: return [], []
         
     df = pd.read_csv(ficheiros_csv[0]) 
     textos_human, textos_ia = [], []
@@ -39,7 +43,8 @@ def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
             
     for _, row in df.iterrows():
         texto = processar_texto(str(row.get(col_texto, '')))
-        if len(texto) < 50: continue
+        if not texto: continue
+        
         valor_label = str(row.get(col_label, '')).lower()
         if str(classe_humano).lower() in valor_label or valor_label == '0': textos_human.append(texto)
         elif str(classe_ia).lower() in valor_label or valor_label == '1': textos_ia.append(texto)
@@ -50,60 +55,52 @@ def extrair_kaggle(dataset_ref, classe_humano, classe_ia):
 if __name__ == "__main__":
     os.makedirs('../data', exist_ok=True)
     dados_por_modelo = {classe: [] for classe in CLASSES_ALVO}
-    print("🚀 A recuperar o Dataset Multi-Classes...\n")
+    print("🚀 A construir o Dataset com Regra de 80-120 Palavras...\n")
+    print("-> A ler Dataset de Exemplos do Professor (dataset-exemplos.csv)...")
+    if os.path.exists('../data/raw/dataset-exemplos.csv'):
+        df_prof = pd.read_csv('../data/raw/dataset-exemplos.csv', sep=';')
+        for _, row in df_prof.iterrows():
+            texto = processar_texto(str(row.get('Text', '')))
+            if not texto: continue
+            
+            lbl = str(row.get('Label', '')).lower()
+            for classe in CLASSES_ALVO:
+                if classe in lbl:
+                    dados_por_modelo[classe].append(texto)
+                    break
+    else:
+        print("   ⚠️ Ficheiro dataset-exemplos.csv não encontrado na pasta raw!")
 
-    # 1. Local
     print("-> A ler HC3 Local (all.jsonl)...")
     if os.path.exists('../data/raw/all.jsonl'):
         df_hc3 = pd.read_json('../data/raw/all.jsonl', lines=True)
         for text in df_hc3['human_answers']: dados_por_modelo['human'].append(processar_texto(text))
         for text in df_hc3['chatgpt_answers']: dados_por_modelo['openai'].append(processar_texto(text))
-    else:
-        print("   ⚠️ ERRO: Ficheiro all.jsonl não encontrado na pasta ../data/raw/")
 
-    print("-> A ler NicolaiSivesind Local (research-abstracts-labeled.csv)...")
-    if os.path.exists('../data/raw/research-abstracts-labeled.csv'):
-        df_nic = pd.read_csv('../data/raw/research-abstracts-labeled.csv')
-        for _, row in df_nic.iterrows():
-            texto = processar_texto(str(row.get('text', row.get('abstract', ''))))
-            if len(texto) < 50: continue
-            lbl = str(row.get('label', row.get('source', ''))).lower()
-            if lbl == '0' or 'human' in lbl: dados_por_modelo['human'].append(texto)
-            elif lbl == '1' or 'machine' in lbl or 'ai' in lbl: dados_por_modelo['openai'].append(texto)
-    else:
-        print("   ⚠️ ERRO: Ficheiro research-abstracts-labeled.csv não encontrado!")
-
-    # 2. Hugging Face 
-    print("-> A extrair do OpenTuringBench (Meta, Google, Mistral)...")
+    print("-> A extrair do OpenTuringBench (Meta, Google, Anthropic)...")
     try:
         ds_turing = load_dataset("MLNTeam-Unical/OpenTuringBench", "in_domain", split="train[:5000]")
         for row in ds_turing:
-            texto_limpo = processar_texto(row.get('text', row.get('content', '')))
-            if not texto_limpo or len(texto_limpo) < 50: continue
+            texto = processar_texto(row.get('text', row.get('content', '')))
+            if not texto: continue
             
             modelo = str(row.get('model', row.get('generator', row.get('label', '')))).lower()
-            if 'llama' in modelo or 'meta' in modelo: dados_por_modelo['meta'].append(texto_limpo)
-            elif 'gemma' in modelo or 'google' in modelo: dados_por_modelo['google'].append(texto_limpo)
-            elif 'mistral' in modelo: dados_por_modelo['mistral'].append(texto_limpo)
+            if 'llama' in modelo or 'meta' in modelo: dados_por_modelo['meta'].append(texto)
+            elif 'gemma' in modelo or 'google' in modelo: dados_por_modelo['google'].append(texto)
+            elif 'claude' in modelo or 'anthropic' in modelo: dados_por_modelo['anthropic'].append(texto)
     except Exception as e: print(f"Erro no OpenTuringBench: {e}")
 
-    # 3. Kaggle
     print("-> A extrair do Kaggle (LLM Detect AI vs Student)...")
     h_text, ia_text = extrair_kaggle("prajwaldongre/llm-detect-ai-generated-vs-student-generated-text", '0', '1')
     dados_por_modelo['human'].extend(h_text)
     dados_por_modelo['openai'].extend(ia_text)
-
-    print("-> A extrair do Kaggle (GPT vs Human Abstracts)...")
-    h_text2, ia_text2 = extrair_kaggle("heleneeriksen/gpt-vs-human-a-corpus-of-research-abstracts", 'human', 'ai')
-    dados_por_modelo['human'].extend(h_text2)
-    dados_por_modelo['openai'].extend(ia_text2)
 
     # 4. Resumo
     print("\n--- Resumo Bruto ---")
     dataframes_finais = []
     
     for modelo, textos in dados_por_modelo.items():
-        textos_unicos = list(set([t for t in textos if len(t) > 50])) 
+        textos_unicos = list(set(textos)) # Remove repetidos
         if len(textos_unicos) > 0:
             df_modelo = pd.DataFrame({'text': textos_unicos, 'label': modelo})
             dataframes_finais.append(df_modelo)
@@ -112,21 +109,17 @@ if __name__ == "__main__":
     if dataframes_finais:
         df_mestre = pd.concat(dataframes_finais, ignore_index=True)
         
-        EQUILIBRAR_DADOS = True
+        # 🎛️ Painel de Controlo
+        EQUILIBRAR_DADOS = False  # True = Cortar pelo mínimo | False = Guardar tudo
         
         if EQUILIBRAR_DADOS:
-            print("\n⚖️ Opção true: A equilibrar o dataset para a rede neuronal...")
             tamanho_minimo = df_mestre['label'].value_counts().min()
-            print(f"-> A cortar todas as classes para ficarem com {tamanho_minimo} frases exatas.")
-            
+            print(f"\n⚖️ A equilibrar todas as classes para {tamanho_minimo} frases...")
             df_final = df_mestre.groupby('label').sample(n=tamanho_minimo, random_state=42)
             df_final = df_final.sample(frac=1, random_state=42).reset_index(drop=True)
-            
-            print(f"\n🚀 Sucesso! Dataset guardado e perfeitamente equilibrado ({tamanho_minimo} por classe).")
-            
         else:
-            print("\n⚠️ Opção false: A guardar o dataset com TODAS as frases (Desequilibrado)...")
+            print("\n⚠️ A guardar o dataset com TODAS as frases (Desequilibrado)...")
             df_final = df_mestre.sample(frac=1, random_state=42).reset_index(drop=True)
-            print(f"\n🚀 Sucesso! Dataset guardado com um total de {len(df_final)} frases!")
         
         df_final.to_csv('../data/dataset.csv', index=False)
+        print(f"🚀 SUCESSO! Dataset guardado com {len(df_final)} frases!")
