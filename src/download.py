@@ -10,7 +10,7 @@ CLASSES_ALVO = ['human', 'openai', 'meta', 'google', 'anthropic']
 
 def processar_texto(texto):
     """Limpa o texto, resolve listas e aplica a Regra das 80-120 Palavras"""
-    # 1. CORREÇÃO: Lidar com o formato de Lista do HC3 (all.jsonl)
+    # 1. Lidar com o formato de Lista do HC3 (all.jsonl)
     if isinstance(texto, (list, tuple)):
         texto = texto[0] if len(texto) > 0 else ""
         
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     dados_por_modelo['human'].extend(h_text)
     dados_por_modelo['openai'].extend(ia_text)
 
-    # RESUMO E BALANCEAMENTO FINAL
+    # Resumo
     print("\n--- Resumo Bruto ---")
     dataframes_finais = []
     
