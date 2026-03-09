@@ -68,9 +68,7 @@ if __name__ == "__main__":
     dados_por_modelo = {classe: [] for classe in CLASSES_ALVO}
     print("🚀 A construir o Dataset Definitivo (Regra de 80-120 Palavras)...\n")
 
-    # =========================================================
-    # 1. O DATASET DO PROFESSOR (125 Exemplos Ouro)
-    # =========================================================
+    # 1. Dataset de Exemplos do Professor
     print("-> A ler Dataset de Exemplos do Professor (dataset-exemplos.csv)...")
     if os.path.exists('../data/raw/dataset-exemplos.csv'):
         df_prof = pd.read_csv('../data/raw/dataset-exemplos.csv', sep=';')
@@ -83,9 +81,7 @@ if __name__ == "__main__":
                     dados_por_modelo[classe].append(texto)
                     break
 
-    # =========================================================
-    # 2. A MINA DE OURO: LMSYS Chatbot Arena (Apanha Todas as IAs)
-    # =========================================================
+    # 2. LMSYS Chatbot Arena 
     print("-> A extrair do LMSYS Chatbot Arena (Buscando Anthropic, OpenAI, Meta, Google)...")
     try:
         # 40 mil conversas devem ser suficientes para sacar uns bons milhares de textos
@@ -111,9 +107,7 @@ if __name__ == "__main__":
     except Exception as e: 
         print(f"Erro no LMSYS: {e}")
 
-    # =========================================================
-    # 3. OUTRAS FONTES HUGGINGFACE E LOCAIS (Para reforçar)
-    # =========================================================
+    # 3. Outras Fontes: OpenTuringBench, HC3 Local, Kaggle (LLM Detect AI vs Student)
     print("-> A extrair do OpenTuringBench...")
     try:
         ds_turing = load_dataset("MLNTeam-Unical/OpenTuringBench", "in_domain", split="train[:5000]")
@@ -136,9 +130,7 @@ if __name__ == "__main__":
     dados_por_modelo['human'].extend(h_text)
     dados_por_modelo['openai'].extend(ia_text)
 
-    # =========================================================
-    # 4. RESUMO E BALANCEAMENTO FINAL
-    # =========================================================
+    # 4. Resumo 
     print("\n--- Resumo Bruto ---")
     dataframes_finais = []
     
@@ -152,7 +144,7 @@ if __name__ == "__main__":
     if dataframes_finais:
         df_mestre = pd.concat(dataframes_finais, ignore_index=True)
         
-        # 🎛️ PAINEL DE CONTROLO
+        # 🎛️ Painel de controlo
         EQUILIBRAR_DADOS = True  # Deixamos no False para tu veres a magia acontecer primeiro!
         
         if EQUILIBRAR_DADOS:
