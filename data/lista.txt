@@ -1,0 +1,1988 @@
+Photosynthesis
+Mitosis
+Meiosis
+Cellular respiration
+Enzyme
+DNA replication
+Immune system
+Natural selection
+Neuron
+Action potential
+Mitochondrion
+Ribosome
+Apoptosis
+Hemoglobin
+Stem cell
+Neuroplasticity
+Endocytosis
+Exocytosis
+Cell membrane
+Osmosis
+Diffusion
+Active transport
+Gene expression
+Transcription
+Translation
+Mutation
+Chromosome
+Allele
+Genotype
+Phenotype
+Dominant gene
+Recessive gene
+Epigenetics
+Proteomics
+Genomics
+Metabolomics
+Homeostasis
+Feedback loop
+Hormone
+Receptor
+Ligand
+Signal transduction
+Cytokine
+Antibody
+Antigen
+T cell
+B cell
+NK cell
+Macrophage
+Neutrophil
+Dendritic cell
+Innate immunity
+Adaptive immunity
+Inflammation
+Pathogen
+Virus
+Bacterium
+Fungus
+Parasite
+Prion
+Biofilm
+Organelle
+Vacuole
+Lysosome
+Golgi apparatus
+Endoplasmic reticulum
+Nucleolus
+Centrosome
+Cytoskeleton
+Flagellum
+Cilia
+Cellulose
+Chitin
+Peptidoglycan
+Lipid bilayer
+Phospholipid
+Cholesterol
+Glycoprotein
+Integrin
+Collagen
+Keratin
+Myosin
+Actin
+Tubulin
+Clathrin
+Dynein
+Kinesin
+Peroxisome
+Autophagy
+Phagocytosis
+Pinocytosis
+Receptor-mediated endocytosis
+Membrane potential
+Resting potential
+Depolarization
+Repolarization
+Hyperpolarization
+Synaptic vesicle
+Neurotransmitter release
+Postsynaptic potential
+CRISPR
+mRNA
+tRNA
+rRNA
+Codon
+Anticodon
+Promoter
+Enhancer
+Intron
+Exon
+Splicing
+Operon
+Plasmid
+Vector
+Restriction enzyme
+Gel electrophoresis
+PCR
+DNA sequencing
+Shotgun sequencing
+FISH
+Southern blot
+Northern blot
+Western blot
+ChIP-seq
+RNA-seq
+Single-cell RNA-seq
+GWAS
+SNP
+Indel
+CNV
+Transposon
+Retrovirus
+Lentivirus
+Adenovirus
+Gene therapy
+Base editing
+Prime editing
+Cas9
+Cas12
+Guide RNA
+Knockout
+Knockin
+Transgenic
+GMO
+Cloning
+Recombinant DNA
+Hybridization
+Primer
+Ligase
+Polymerase
+Helicase
+Topoisomerase
+Telomere
+Telomerase
+Centromere
+Heterochromatin
+Euchromatin
+Histone
+Nucleosome
+DNA methylation
+Histone acetylation
+Histone methylation
+Chromatin remodeling
+Imprinting
+X-inactivation
+Non-coding RNA
+MicroRNA
+siRNA
+lncRNA
+piRNA
+ENCODE project
+Synteny
+Conserved sequence
+Pseudogene
+Gene duplication
+Polyploidy
+Aneuploidy
+Trisomy
+Monosomy
+Inversion
+Translocation
+Deletion
+Frameshift mutation
+Missense mutation
+Nonsense mutation
+Silent mutation
+Gain-of-function
+Loss-of-function
+Haploinsufficiency
+Penetrance
+Expressivity
+Epistasis
+Pleiotropy
+Linkage disequilibrium
+Hardy-Weinberg equilibrium
+Vaccine
+Antibiotic resistance
+Microbiome
+Bacteriophage
+Endospore
+Gram stain
+Lipopolysaccharide
+Pilus
+Capsule
+Biofilm formation
+Quorum sensing
+Horizontal gene transfer
+Conjugation
+Transformation
+Transduction
+MRSA
+VRE
+Beta-lactamase
+Efflux pump
+Minimum inhibitory concentration
+Bacteriostatic
+Bactericidal
+Probiotic
+Prebiotic
+Commensal
+Pathobiont
+Dysbiosis
+Metagenomics
+16S rRNA sequencing
+Viral capsid
+Envelope glycoprotein
+Hemagglutinin
+Neuraminidase
+RNA virus
+DNA virus
+Prophage
+Lytic cycle
+Lysogenic cycle
+Viral tropism
+Host range
+Zoonosis
+Pandemic
+Epidemic
+Endemic
+Herd immunity
+Adjuvant
+Attenuated vaccine
+Subunit vaccine
+mRNA vaccine
+Viral vector vaccine
+Seroconversion
+Titer
+Neutralizing antibody
+Symbiosis
+Mutualism
+Parasitism
+Commensalism
+Ecology
+Ecosystem
+Biodiversity
+Trophic level
+Food web
+Keystone species
+Invasive species
+Extinction
+Evolution
+Speciation
+Phylogeny
+Cladogram
+Taxonomy
+Archaea
+Eukaryote
+Prokaryote
+Allopatric speciation
+Sympatric speciation
+Adaptive radiation
+Convergent evolution
+Divergent evolution
+Coevolution
+Sexual selection
+Genetic drift
+Founder effect
+Bottleneck effect
+Gene flow
+Mutation rate
+Fitness
+Selective pressure
+Adaptation
+Niche
+Habitat
+Carrying capacity
+Population dynamics
+Logistic growth
+Exponential growth
+Interspecific competition
+Intraspecific competition
+Predation
+Herbivory
+Decomposer
+Primary producer
+Secondary consumer
+Apex predator
+Biomass
+Net primary productivity
+Carbon sequestration
+Nutrient cycling
+Succession
+Climax community
+Biogeography
+Island biogeography
+Species richness
+Species evenness
+Shannon index
+Endemism
+Relict species
+Living fossil
+Convergent morphology
+Homologous structure
+Analogous structure
+Vestigial organ
+Molecular clock
+Neutral theory
+Positive selection
+Purifying selection
+Balancing selection
+Kin selection
+Altruism
+Reciprocal altruism
+Pharmacokinetics
+Pharmacodynamics
+Clinical trial
+Placebo
+Double-blind
+Biomarker
+Diagnosis
+Prognosis
+Etiology
+Pathophysiology
+Anesthesia
+Analgesic
+Anti-inflammatory
+Immunosuppressant
+Chemotherapy
+Radiotherapy
+Immunotherapy
+Monoclonal antibody
+Small molecule
+Biosimilar
+Cardiac output
+Blood pressure
+Heart rate
+ECG
+EEG
+MRI
+CT scan
+PET scan
+Ultrasound
+Endoscopy
+Biopsy
+Histology
+Cytology
+Hematology
+Serology
+Metabolism
+Catabolism
+Anabolism
+Glycolysis
+Krebs cycle
+Oxidative phosphorylation
+ATP synthase
+NADH
+FADH2
+Pyruvate
+Gluconeogenesis
+Glycogenesis
+Lipolysis
+Beta-oxidation
+Fatty acid synthesis
+Cholesterol synthesis
+Bile acid
+Urea cycle
+Transamination
+Deamination
+Insulin
+Glucagon
+Leptin
+Ghrelin
+Thyroid hormone
+Cortisol
+Aldosterone
+Epinephrine
+Growth hormone
+Prolactin
+Testosterone
+Estrogen
+Progesterone
+FSH
+LH
+Renin-angiotensin system
+Blood coagulation
+Platelet aggregation
+Fibrin
+Thrombin
+Erythropoiesis
+Leukopoiesis
+Thrombopoiesis
+Bone marrow
+Hematopoietic stem cell
+Lymph node
+Spleen
+Thymus
+Tonsil
+Mucosa-associated lymphoid tissue
+Glomerular filtration
+Tubular reabsorption
+Tubular secretion
+Renin
+Erythropoietin
+Ventilation
+Perfusion
+Gas exchange
+Tidal volume
+Vital capacity
+Peristalsis
+Gastric acid
+Pepsin
+Bile
+Pancreatic enzyme
+Quantum mechanics
+Thermodynamics
+Black hole
+General relativity
+Dark matter
+String theory
+Higgs boson
+Electromagnetism
+Nuclear fusion
+Standard Model
+Gravitational wave
+Superconductivity
+Kinematics
+Special relativity
+Dark energy
+Neutron star
+Pulsar
+Quasar
+White dwarf
+Red giant
+Supernova
+Gamma-ray burst
+Cosmic ray
+Cosmic microwave background
+Big Bang
+Inflation
+Baryon
+Lepton
+Quark
+Gluon
+Photon
+Neutrino
+Boson
+Fermion
+Pauli exclusion principle
+Heisenberg uncertainty principle
+Wave-particle duality
+Superposition
+Quantum entanglement
+Quantum tunneling
+Wave function
+Schrodinger equation
+Dirac equation
+Hamiltonian
+Lagrangian
+Angular momentum
+Spin
+Magnetic moment
+Zeeman effect
+Stark effect
+Photoelectric effect
+Compton scattering
+Pair production
+Bremsstrahlung
+Synchrotron radiation
+Entropy
+Enthalpy
+Gibbs free energy
+Carnot cycle
+Heat capacity
+Thermal conductivity
+Viscosity
+Reynolds number
+Mach number
+Bernoulli principle
+Newton's laws
+Gravity
+Orbital mechanics
+Kepler's laws
+Escape velocity
+Tidal force
+Precession
+Nutation
+Parallax
+Redshift
+Blueshift
+Hubble constant
+Cosmic distance ladder
+Cepheid variable
+Type Ia supernova
+Accretion disk
+Event horizon
+Hawking radiation
+Schwarzschild radius
+Penrose process
+Frame dragging
+Lense-Thirring effect
+Gravitational lensing
+Einstein ring
+Microlensing
+Stellar nucleosynthesis
+CNO cycle
+Proton-proton chain
+Triple-alpha process
+Chandrasekhar limit
+Tolman-Oppenheimer-Volkoff limit
+Magnetar
+Millisecond pulsar
+X-ray binary
+Accretion
+Phonon
+Plasmon
+Polariton
+Magnon
+Exciton
+Cooper pair
+BCS theory
+Josephson effect
+Meissner effect
+Quantum Hall effect
+Topological insulator
+Weyl semimetal
+Dirac cone
+Band gap
+Fermi level
+Brillouin zone
+Crystal lattice
+Unit cell
+Bravais lattice
+Bloch theorem
+Density functional theory
+Hartree-Fock
+Configuration interaction
+Perturbation theory
+Variational principle
+Monte Carlo method
+Molecular dynamics
+Tight-binding model
+Hubbard model
+Ising model
+Spin-orbit coupling
+Berry phase
+Chern number
+Quantum spin liquid
+Frustrated magnetism
+Mott insulator
+Kondo effect
+Heavy fermion
+Quantum criticality
+Quantum phase transition
+Bose-Einstein condensate
+Fermi gas
+Fermi surface
+Nesting
+Van Hove singularity
+Phonon dispersion
+Photonic bandgap
+Metamaterial
+Negative refractive index
+Transformation optics
+Spintronics
+Giant magnetoresistance
+Tunnel magnetoresistance
+Spin Hall effect
+Rashba effect
+Majorana fermion
+Anyons
+Fractional quantum Hall effect
+Laughlin wavefunction
+Composite fermion
+Quantum dot
+Quantum wire
+Quantum well
+Two-dimensional electron gas
+Landau level
+Aharonov-Bohm effect
+Weak localization
+Anderson localization
+Percolation
+Scaling theory
+Covalent bond
+Isotope
+Catalysis
+Polymer
+Periodic table
+Oxidation
+Acid-base reaction
+Chromatography
+Spectroscopy
+Electronegativity
+Ionic bond
+Metallic bond
+Hydrogen bond
+Van der Waals force
+Dipole moment
+Resonance
+Aromaticity
+Chirality
+Enantiomer
+Diastereomer
+Racemic mixture
+Optical rotation
+Stereoisomer
+Constitutional isomer
+Conformer
+Nucleophile
+Electrophile
+Leaving group
+Carbocation
+Carbanion
+Free radical
+Reaction mechanism
+SN1
+SN2
+E1
+E2
+Addition reaction
+Elimination reaction
+Substitution reaction
+Cycloaddition
+Redox
+Electrode potential
+Faraday's law
+Electrolysis
+Electrochemistry
+pH
+pKa
+Buffer
+Titration
+Equivalence point
+Molarity
+Molality
+Mole fraction
+Stoichiometry
+Limiting reagent
+Activation energy
+Transition state
+Reaction coordinate
+Hammond postulate
+Frontier orbitals
+Orbital hybridization
+VSEPR
+Molecular orbital theory
+Sigma bond
+Pi bond
+Coordination compound
+Ligand field theory
+Crystal field splitting
+Chelate
+Organometallic
+Polymer chain
+Cross-linking
+Vulcanization
+Polymerization
+Monomer
+Thermoplastic
+Thermoset
+Elastomer
+Surfactant
+Emulsion
+Colloidal suspension
+Sol-gel
+Aerogel
+Zeolite
+Metal-organic framework
+Supramolecular chemistry
+Host-guest chemistry
+Rotaxane
+Catenane
+Cryptand
+Green chemistry
+Atom economy
+Solvent-free reaction
+Microwave synthesis
+Flow chemistry
+Asymmetric catalysis
+Enzymatic catalysis
+Photocatalysis
+Electrocatalysis
+Biocatalysis
+NMR spectroscopy
+Mass spectrometry
+IR spectroscopy
+UV-Vis spectroscopy
+X-ray crystallography
+Raman spectroscopy
+EPR spectroscopy
+Fluorescence spectroscopy
+Circular dichroism
+Calorimetry
+Thermogravimetric analysis
+Differential scanning calorimetry
+Dynamic light scattering
+BET surface area
+Porosimetry
+Cyclic voltammetry
+Impedance spectroscopy
+Chronoamperometry
+Potentiostatic
+Galvanostatic
+Calculus
+Linear algebra
+Differential equation
+Partial differential equation
+Fourier transform
+Laplace transform
+Z-transform
+Convolution
+Eigenvalue
+Eigenvector
+Matrix decomposition
+Singular value decomposition
+QR decomposition
+LU decomposition
+Cholesky decomposition
+Principal component analysis
+Independent component analysis
+Factor analysis
+Cluster analysis
+k-means
+Graph theory
+Topology
+Number theory
+Abstract algebra
+Group theory
+Ring theory
+Field theory
+Category theory
+Set theory
+Logic
+Combinatorics
+Probability theory
+Statistics
+Hypothesis testing
+p-value
+Confidence interval
+Regression
+ANOVA
+Chi-squared test
+Bootstrapping
+Riemannian geometry
+Differential geometry
+Algebraic topology
+Homotopy
+Homology
+Cohomology
+Manifold
+Fiber bundle
+Connection
+Curvature
+Lie group
+Lie algebra
+Representation theory
+Galois theory
+Class field theory
+Elliptic curve
+Modular form
+L-function
+Zeta function
+Riemann hypothesis
+Prime number theorem
+Goldbach conjecture
+Twin prime conjecture
+P vs NP
+Millennium problems
+Numerical analysis
+Finite element method
+Finite difference method
+Spectral method
+Multigrid method
+Optimization
+Convex optimization
+Linear programming
+Integer programming
+Semidefinite programming
+Game theory
+Nash equilibrium
+Mechanism design
+Auction theory
+Social choice theory
+Information theory
+Shannon entropy
+Mutual information
+Channel capacity
+Coding theory
+Kolmogorov complexity
+Turing machine
+Computability
+Halting problem
+Godel incompleteness
+Artificial neural network
+Machine learning
+Cryptography
+Algorithm complexity
+Big O notation
+NP-completeness
+Dynamic programming
+Divide and conquer
+Hash function
+Binary search
+Breadth-first search
+Depth-first search
+Dijkstra algorithm
+A* algorithm
+Floyd-Warshall
+Support vector machine
+Random forest
+Gradient boosting
+Backpropagation
+Stochastic gradient descent
+Convolutional neural network
+Recurrent neural network
+Transformer
+Attention mechanism
+Embedding
+Regularization
+Dropout
+Batch normalization
+Activation function
+Loss function
+Bayesian inference
+Maximum likelihood
+Markov chain
+Hidden Markov model
+Monte Carlo simulation
+Reinforcement learning
+Q-learning
+Policy gradient
+Actor-critic
+Multi-armed bandit
+Natural language processing
+Tokenization
+Word embedding
+Language model
+Named entity recognition
+Sentiment analysis
+Machine translation
+Text summarization
+Question answering
+Information retrieval
+Computer vision
+Object detection
+Semantic segmentation
+Optical flow
+Depth estimation
+Generative adversarial network
+Variational autoencoder
+Diffusion model
+Normalizing flow
+Energy-based model
+Transfer learning
+Fine-tuning
+Few-shot learning
+Zero-shot learning
+Meta-learning
+Federated learning
+Differential privacy
+Adversarial examples
+Model interpretability
+Fairness in AI
+Quantum computing
+Qubit
+Quantum gate
+Quantum error correction
+Quantum supremacy
+Shor's algorithm
+Grover's algorithm
+Quantum Fourier transform
+Quantum teleportation
+Quantum key distribution
+Operating system
+Virtual memory
+Cache coherence
+Concurrency
+Deadlock
+Distributed system
+Consensus algorithm
+Raft protocol
+Paxos
+Byzantine fault tolerance
+Blockchain
+Merkle tree
+Proof of work
+Proof of stake
+Smart contract
+Database normalization
+ACID properties
+NoSQL
+MapReduce
+Streaming processing
+Semiconductor
+Transistor
+Integrated circuit
+MOSFET
+FPGA
+Microprocessor
+Memory hierarchy
+Cache
+Pipeline
+Parallelism
+Optical fiber
+Wavelength division multiplexing
+Photonic crystal
+Laser
+LED
+Solar cell
+Photovoltaic
+Thermoelectric
+Piezoelectric
+Magnetohydrodynamics
+Robotics
+Inverse kinematics
+PID controller
+Kalman filter
+SLAM
+3D printing
+Additive manufacturing
+Sintering
+CNC machining
+Lithography
+Nanotechnology
+Nanoparticle
+Carbon nanotube
+Graphene
+MEMS
+Biosensor
+Atomic force microscopy
+Scanning tunneling microscopy
+Electron microscopy
+Aerodynamics
+Fluid dynamics
+Finite element analysis
+Computational fluid dynamics
+Boundary layer
+Turbulence
+Laminar flow
+Drag coefficient
+Lift force
+Thrust
+Stress
+Strain
+Young's modulus
+Poisson's ratio
+Fatigue
+Fracture mechanics
+Creep
+Hardness
+Toughness
+Ductility
+Heat exchanger
+Thermodynamic cycle
+Rankine cycle
+Brayton cycle
+Refrigeration cycle
+Power electronics
+DC-DC converter
+Inverter
+Rectifier
+Signal processing
+Sampling theorem
+Aliasing
+Windowing
+Digital filter
+Control theory
+Transfer function
+Bode plot
+Root locus
+State space
+Antenna
+Phased array
+Beamforming
+MIMO
+OFDM
+Modulation
+Demodulation
+Spread spectrum
+Error correction code
+Turbo code
+MEMS resonator
+Gyroscope
+Accelerometer
+Magnetometer
+Pressure sensor
+Plate tectonics
+Seismology
+Volcanism
+Erosion
+Sedimentary basin
+Stratigraphy
+Paleontology
+Fossil record
+Mass extinction
+Carbon cycle
+Nitrogen cycle
+Water cycle
+Greenhouse effect
+Albedo
+Radiative forcing
+Climate feedback
+El Nino
+La Nina
+Thermohaline circulation
+Ocean acidification
+Eutrophication
+Biodegradation
+Biogeochemistry
+Soil horizon
+Permafrost
+Glacier mass balance
+Sea level rise
+Ozone depletion
+Acid rain
+Particulate matter
+Subduction
+Mantle convection
+Isostasy
+Orogenesis
+Rifting
+Igneous rock
+Metamorphic rock
+Sedimentary rock
+Mineral
+Crystallography
+Hydrogeology
+Aquifer
+Vadose zone
+Groundwater recharge
+Contaminant plume
+Limnology
+Oceanography
+Tidal dynamics
+Wave energy
+Storm surge
+Atmospheric circulation
+Hadley cell
+Polar vortex
+Jet stream
+Monsoon
+Coriolis effect
+Geostrophic flow
+Baroclinic instability
+Rossby wave
+Kelvin wave
+Paleoclimatology
+Ice core record
+Dendrochronology
+Speleothem
+Varve
+Milankovitch cycles
+Orbital forcing
+Glacial-interglacial cycle
+Younger Dryas
+Holocene
+Anthropocene
+Tipping point
+Abrupt climate change
+Carbon capture
+Geoengineering
+Synapse
+Dopamine
+Serotonin
+Norepinephrine
+GABA
+Glutamate
+Acetylcholine
+Endorphin
+Long-term potentiation
+Long-term depression
+Hebbian learning
+Synaptic pruning
+Neurogenesis
+Default mode network
+Working memory
+Executive function
+Cognitive load
+Attention
+Consciousness
+Metacognition
+Theory of mind
+Mirror neuron
+Embodied cognition
+Cerebellum
+Hippocampus
+Amygdala
+Prefrontal cortex
+Basal ganglia
+Thalamus
+Hypothalamus
+Brain stem
+Spinal cord
+Sensory cortex
+Motor cortex
+Association cortex
+Broca's area
+Wernicke's area
+Corpus callosum
+White matter
+Gray matter
+Glial cell
+Astrocyte
+Oligodendrocyte
+Microglia
+Schwann cell
+Blood-brain barrier
+Cerebrospinal fluid
+Neuroinflammation
+Neurodegeneration
+Neuroprotection
+Alzheimer's disease
+Parkinson's disease
+Huntington's disease
+ALS
+Multiple sclerosis
+Epilepsy
+Seizure
+EEG oscillation
+Alpha wave
+Gamma oscillation
+Optogenetics
+Deep brain stimulation
+Transcranial magnetic stimulation
+Functional MRI
+Diffusion tensor imaging
+Connectome
+Calcium imaging
+Patch clamp
+Multielectrode array
+Two-photon microscopy
+Radiation therapy
+Proton therapy
+Brachytherapy
+Dosimetry
+Radiosensitivity
+Ionizing radiation
+X-ray
+Gamma ray
+Alpha particle
+Beta particle
+Half-life
+Radioactive decay
+Nuclear medicine
+PET tracer
+SPECT
+Contrast agent
+Gadolinium
+Iodine contrast
+Microbubble
+Nanocarrier
+Drug delivery
+Liposome
+Nanoparticle drug carrier
+Prodrug
+Targeted therapy
+Membrane biophysics
+Ion channel
+Patch clamp electrophysiology
+Mechanobiology
+Cell mechanics
+Cytoskeletal mechanics
+Traction force microscopy
+Atomic force spectroscopy
+Optical tweezers
+Magnetic tweezers
+Fluorescence microscopy
+FRET
+FRAP
+TIRF microscopy
+Super-resolution microscopy
+STORM
+PALM
+STED microscopy
+Light sheet microscopy
+Cryo-electron microscopy
+Galaxy formation
+Dark matter halo
+Galaxy cluster
+Large-scale structure
+Cosmic web
+Void
+Filament
+Interstellar medium
+Interstellar dust
+Molecular cloud
+Star formation
+Protostar
+Main sequence
+Hertzsprung-Russell diagram
+Stellar evolution
+Planetary nebula
+Asymptotic giant branch
+Helium flash
+Degenerate matter
+Neutronization
+Core collapse
+Shock wave
+Neutrino burst
+Kilonova
+R-process nucleosynthesis
+Exoplanet
+Transit method
+Radial velocity method
+Direct imaging
+Gravitational microlensing
+Habitable zone
+Biosignature
+Atmospheric spectroscopy
+Protoplanetary disk
+Planetesimal
+Solar wind
+Coronal mass ejection
+Solar flare
+Magnetosphere
+Van Allen belt
+Cosmic inflation
+Multiverse
+Eternal inflation
+Landscape problem
+Anthropic principle
+Quantum gravity
+Loop quantum gravity
+Spin foam
+Causal dynamical triangulation
+Holographic principle
+Benzene
+Toluene
+Naphthalene
+Anthracene
+Pyrene
+Fullerene
+Buckminsterfullerene
+Graphene oxide
+Porphyrin
+Phthalocyanine
+Corrole
+Calixarene
+Cucurbituril
+Cyclodextrin
+Dendrimers
+Hyperbranched polymer
+Block copolymer
+Amphiphile
+Micelle
+Vesicle
+Lipid nanoparticle
+Self-assembly
+Molecular recognition
+Supramolecular polymer
+Click chemistry
+Azide-alkyne cycloaddition
+Diels-Alder reaction
+Metathesis
+Cross-coupling
+Suzuki coupling
+Heck reaction
+Negishi coupling
+Buchwald-Hartwig
+C-H activation
+Grignard reaction
+Wittig reaction
+Aldol reaction
+Michael addition
+Mannich reaction
+Sharpless epoxidation
+CBS reduction
+Evans auxiliary
+Chiral pool
+Asymmetric induction
+Protecting group
+Retrosynthesis
+Total synthesis
+Combinatorial chemistry
+High-throughput screening
+Enzyme kinetics
+Michaelis-Menten
+Km
+Vmax
+kcat
+Competitive inhibition
+Noncompetitive inhibition
+Uncompetitive inhibition
+Allosteric regulation
+Cooperativity
+Hill coefficient
+Enzyme active site
+Induced fit
+Lock and key
+Cofactor
+Coenzyme
+Prosthetic group
+FAD
+NAD+
+Coenzyme A
+Thiamine pyrophosphate
+Pyridoxal phosphate
+Biotin
+Folate
+Vitamin B12
+Amino acid
+Peptide bond
+Protein folding
+Primary structure
+Secondary structure
+Alpha helix
+Beta sheet
+Tertiary structure
+Quaternary structure
+Protein domain
+Disulfide bond
+Hydrophobic core
+Chaperone
+Ubiquitin
+Proteasome
+Post-translational modification
+Phosphorylation
+Glycosylation
+Ubiquitination
+Sumoylation
+Lipid metabolism
+Sphingolipid
+Glycolipid
+Sterol
+Wax ester
+Carbohydrate metabolism
+Pentose phosphate pathway
+Galactose metabolism
+Fructose metabolism
+Lactose intolerance
+Nucleotide synthesis
+Purine
+Pyrimidine
+de novo synthesis
+Salvage pathway
+MHC class I
+MHC class II
+Antigen presentation
+Peptide epitope
+TCR
+BCR
+Immunological synapse
+CD4 T cell
+CD8 T cell
+Regulatory T cell
+Th1
+Th2
+Th17
+Tfh
+Memory T cell
+Plasma cell
+Memory B cell
+Germinal center
+Somatic hypermutation
+Class switching
+Affinity maturation
+Clonal selection
+Clonal expansion
+Negative selection
+Central tolerance
+Peripheral tolerance
+Autoimmunity
+Rheumatoid arthritis
+Lupus
+Type 1 diabetes
+Psoriasis
+Crohn's disease
+Celiac disease
+Allergy
+IgE
+Mast cell
+Basophil
+Eosinophil
+Anaphylaxis
+Atopy
+Hygiene hypothesis
+Tolerance induction
+Desensitization
+PD-1
+CTLA-4
+Checkpoint inhibitor
+CAR-T cell
+Bispecific antibody
+Complement system
+Opsonization
+Membrane attack complex
+Lectin pathway
+Classical pathway
+Toll-like receptor
+NOD-like receptor
+RIG-I
+STING
+Inflammasome
+Pattern recognition receptor
+PAMP
+DAMP
+Pyroptosis
+NETosis
+Drug target
+G-protein coupled receptor
+Ion channel pharmacology
+Nuclear receptor
+Kinase inhibitor
+Protease inhibitor
+HDAC inhibitor
+Epigenetic drug
+Antisense oligonucleotide
+siRNA therapeutics
+Pharmacogenomics
+Drug metabolism
+CYP450
+Phase I metabolism
+Phase II metabolism
+Bioavailability
+First-pass effect
+Volume of distribution
+Plasma protein binding
+Clearance
+Area under curve
+Cmax
+Tmax
+Steady state
+Therapeutic index
+LD50
+ED50
+Dose-response curve
+Receptor occupancy
+Agonist
+Antagonist
+Partial agonist
+Inverse agonist
+Allosteric modulator
+Drug-drug interaction
+Induction
+Inhibition
+Polypharmacy
+Adverse drug reaction
+Prodrug activation
+Targeted drug delivery
+Blood-brain barrier penetration
+Oral bioavailability
+Solubility
+ADMET
+Lead compound
+Drug-like properties
+Lipinski rule of five
+QSAR
+Embryogenesis
+Gastrulation
+Neurulation
+Organogenesis
+Morphogenesis
+Differentiation
+Pluripotency
+Totipotency
+Multipotency
+Unipotency
+Oct4
+Sox2
+Nanog
+Klf4
+c-Myc
+Induced pluripotent stem cell
+Blastocyst
+Inner cell mass
+Trophoblast
+Placenta
+Ectoderm
+Mesoderm
+Endoderm
+Neural crest
+Somite
+Notochord
+Hox gene
+Patterning
+Positional information
+Morphogen gradient
+Wingless/Wnt
+Sonic hedgehog
+BMP
+Notch
+FGF
+Apical ectodermal ridge
+Zone of polarizing activity
+Progress zone
+Limb bud
+Digit identity
+Axon guidance
+Netrin
+Slit
+Ephrin
+Semaphorin
+Synaptogenesis
+Dendritic arborization
+Axon pruning
+Synaptic refinement
+Critical period
+Proteome
+Structural biology
+NMR protein structure
+Cryo-EM structure
+Protein Data Bank
+Homology modeling
+Ab initio folding
+AlphaFold
+Rosetta
+Protein-protein interaction
+Interactome
+Yeast two-hybrid
+Co-immunoprecipitation
+Pulldown assay
+Bioluminescence resonance energy transfer
+Surface plasmon resonance
+Isothermal titration calorimetry
+BioLayer interferometry
+Enzyme structure
+Active site
+Substrate binding
+Catalytic mechanism
+Transition state analog
+Metalloprotein
+Heme protein
+Iron-sulfur cluster
+Molybdenum cofactor
+Flavoprotein
+Membrane protein
+Transmembrane helix
+Beta barrel
+Lipid bilayer interaction
+Detergent solubilization
+Ion transporter
+ABC transporter
+P-type ATPase
+Aquaporin
+Connexin
+Motor protein
+ATP hydrolysis
+Power stroke
+Processivity
+Run length
+Chaperone system
+Hsp70
+Hsp90
+GroEL
+TriC
+Scaffold
+Hydrogel
+Electrospinning
+Bioprinting
+Tissue engineering
+Extracellular matrix
+Fibronectin
+Laminin
+Vitronectin
+Tenascin
+Cell adhesion
+Focal adhesion
+Integrin signaling
+Mechanosensing
+Stiffness gradient
+Decellularization
+Bioreactor
+Organoid
+Spheroid
+Microfluidic organ-on-chip
+Vascularization
+Angiogenesis
+VEGF
+Pericyte
+Endothelial cell
+Bone regeneration
+Hydroxyapatite
+Calcium phosphate
+Bioglass
+Tricalcium phosphate
+Cartilage tissue engineering
+Chondrocyte
+Collagen scaffold
+Fibrin gel
+Alginate bead
+Skin substitute
+Wound healing
+Keratinocyte
+Dermal fibroblast
+Epidermal growth factor
+Neural tissue engineering
+Nerve guide conduit
+Neurotrophic factor
+GDNF
+Cardiac tissue engineering
+Cardiomyocyte
+Contractility
+Electrophysiology
+Action potential propagation
+Crystal structure
+Amorphous material
+Glass transition
+Crystallization
+Nucleation
+Grain boundary
+Dislocation
+Vacancy
+Interstitial
+Diffusion in solids
+Phase diagram
+Eutectic point
+Liquidus
+Solidus
+Phase transformation
+Martensitic transformation
+Austenite
+Martensite
+Bainite
+Pearlite
+Alloy
+Steel
+Stainless steel
+Titanium alloy
+Nickel superalloy
+Ceramic
+Alumina
+Silicon carbide
+Silicon nitride
+Zirconia
+Composite material
+Carbon fiber
+Glass fiber
+Matrix material
+Fiber reinforcement
+Coating
+Thin film
+Physical vapor deposition
+Chemical vapor deposition
+Atomic layer deposition
+Corrosion
+Passivation
+Galvanic corrosion
+Pitting corrosion
+Stress corrosion cracking
+Tribology
+Friction
+Wear
+Lubrication
+Contact mechanics
+Photovoltaic cell
+Perovskite solar cell
+Dye-sensitized solar cell
+Organic solar cell
+Multijunction cell
+Wind turbine
+Blade aerodynamics
+Permanent magnet generator
+Power grid
+Smart grid
+Energy storage
+Lithium-ion battery
+Solid-state battery
+Flow battery
+Supercapacitor
+Hydrogen fuel cell
+Proton exchange membrane
+Green hydrogen
+Power-to-gas
+Direct air capture
+Geological sequestration
+Mineralization
+BECCS
+Life cycle assessment
+Carbon footprint
+Embodied carbon
+Circular economy
+Industrial symbiosis
+Biomass energy
+Anaerobic digestion
+Biogas
+Pyrolysis
+Gasification
+Geothermal energy
+Hydrothermal
+Enhanced geothermal
+Ocean thermal energy
+Tidal energy
+Nuclear fission
+Fission reactor
+Pressurized water reactor
+Boiling water reactor
+Molten salt reactor
+Fusion reactor
+Tokamak
+Inertial confinement
+Plasma confinement
+ITER
+Survival analysis
+Kaplan-Meier curve
+Cox proportional hazards
+Hazard ratio
+Log-rank test
+Receiver operating characteristic
+Area under ROC
+Sensitivity
+Specificity
+Positive predictive value
+Negative predictive value
+Likelihood ratio
+Odds ratio
+Relative risk
+Absolute risk reduction
+Number needed to treat
+Forest plot
+Meta-analysis
+Systematic review
+Cochrane review
+Randomization
+Stratification
+Intention-to-treat
+Per-protocol analysis
+Crossover design
+Power calculation
+Sample size
+Type I error
+Type II error
+Effect size
+Cohen's d
+Pearson correlation
+Spearman correlation
+Kendall tau
+Partial correlation
+Multiple testing correction
+Bonferroni correction
+False discovery rate
+Benjamini-Hochberg
+q-value
+Mixed effects model
+Multilevel model
+Structural equation modeling
+Path analysis
+Causal inference
+Propensity score
+Instrumental variable
+Difference-in-differences
+Regression discontinuity
+Synthetic control
+Sequence alignment
+BLAST
+Smith-Waterman
+Needleman-Wunsch
+Multiple sequence alignment
+Phylogenetic tree
+Maximum likelihood phylogeny
+Bayesian phylogenetics
+Bootstrap support
+Branch length
+Gene ontology
+Pathway analysis
+KEGG
+Reactome
+STRING database
+Protein structure prediction
+Secondary structure prediction
+Intrinsically disordered region
+Domain annotation
+Pfam
+Variant calling
+VCF format
+Annotation pipeline
+Variant effect predictor
+ClinVar
+Transcriptome assembly
+De novo assembly
+Reference-based mapping
+Differential expression
+DESeq2
+Single-cell analysis
+Cell clustering
+Dimensionality reduction
+UMAP
+t-SNE
+Pseudotime analysis
+Trajectory inference
+Cell type annotation
+Spatial transcriptomics
+Multiomics integration
+Network biology
+Co-expression network
+Protein interaction network
+Hub gene
+Module
+Genome browser
+UCSC genome browser
+Ensembl
+RefSeq
+UniProt
+Nuclear binding energy
+Mass defect
+Fission yield
+Chain reaction
+Critical mass
+Neutron moderation
+Moderator
+Control rod
+Fuel rod
+Nuclear waste
+Radioactive series
+Decay chain
+Secular equilibrium
+Transient equilibrium
+Bateman equation
+Gray
+Sievert
+RBE
+LET
+Proton beam
+Heavy ion
+Bragg peak
+Spread-out Bragg peak
+Carbon therapy
+Particle accelerator
+Cyclotron
+Synchrotron
+Linear accelerator
+Collider
+Detector
+Scintillator
+Calorimeter
+Tracker
+Time-of-flight
+Cross section
+Luminosity
+Event rate
+Trigger
+Data acquisition
+GEANT4
+FLUKA
+MCNP
+PENELOPE
+CP violation
+Matter-antimatter asymmetry
+Baryogenesis
+Leptogenesis
+Sphalerons
+Supersymmetry
+Neutralino
+Squark
+Gluino
+Slepton
+Extra dimensions
+Kaluza-Klein
+Large extra dimensions
+Warped compactification
+Brane world
+Axion
+WIMP
+Sterile neutrino
+Primordial black hole
+Gravitino
+Stimulated emission
+Population inversion
+Optical cavity
+Mode locking
+Q-switching
+Chirped pulse amplification
+Attosecond pulse
+High harmonic generation
+Femtosecond laser
+Nonlinear optics
+Second harmonic generation
+Optical parametric amplification
+Four-wave mixing
+Kerr effect
+Single-mode fiber
+Multimode fiber
+Dispersion
+Chromatic aberration
+Holography
+Diffraction grating
+Etalon
+Interferometer
+Michelson interferometer
+Fabry-Perot
+Sagnac effect
+Optical coherence tomography
+LIDAR
+Structured illumination
+Plasmonics
+Surface plasmon polariton
+Localized surface plasmon
+SERS
+Near-field optics
+Quantum optics
+Photon statistics
+Squeezed light
+Bell inequality
+Quantum cryptography
+Entangled photon pair
+Spontaneous parametric down-conversion
+Quantum repeater
+Quantum memory
+Photonic qubit
+Optical tweezer
+Radiation pressure
+Photon momentum
+Optical binding
+Laser cooling
+Perception
+Sensation
+Psychophysics
+Signal detection theory
+Weber's law
+Gestalt principles
+Figure-ground
+Perceptual grouping
+Visual search
+Feature integration
+Attention blink
+Change blindness
+Inattentional blindness
+Multisensory integration
+Rubber hand illusion
+Episodic memory
+Semantic memory
+Procedural memory
+Implicit memory
+Explicit memory
+Encoding
+Consolidation
+Retrieval
+Reconsolidation
+Forgetting curve
+Cognitive bias
+Confirmation bias
+Availability heuristic
+Anchoring
+Framing effect
+Dual process theory
+System 1
+System 2
+Cognitive control
+Inhibitory control
+Language acquisition
+Universal grammar
+Critical period hypothesis
+Bilingualism
+Aphasia
+Spatial cognition
+Mental rotation
+Cognitive map
+Place cell
+Grid cell
+Decision making
+Expected utility
+Prospect theory
+Risk aversion
+Temporal discounting
+Systems biology
+Network medicine
+Synthetic biology
+Metabolic engineering
+Directed evolution
+Protein engineering
+Rational design
+Computational biology
+Structural genomics
+Chemical biology
+Theranostics
+Personalized medicine
+Precision oncology
+Liquid biopsy
+Circulating tumor DNA
+Microfluidics
+Lab-on-a-chip
+Digital PCR
+Droplet microfluidics
+Organ-on-a-chip
+CRISPR screen
+Pooled screen
+Arrayed screen
+Genetic interaction
+Synthetic lethality

@@ -20,8 +20,29 @@ class Layer:
 
 
 class DenseLayer(Layer):
-    def __init__(self, input_shape, n_units, optimizer=None, learning_rate=0.01, momentum=0.9):
+    def __init__(self, input_shape, n_units, optimizer=None, learning_rate=0.01,
+                 momentum=0.9, l2_lambda=0.0):
+        """
+        Camada densa com suporte a regularização L2.
+
+        Parâmetros
+        ----------
+        input_shape : int
+            Número de features de entrada.
+        n_units : int
+            Número de neurónios na camada.
+        optimizer : SGD | Adam | None
+            Otimizador. Se None, usa SGD por defeito.
+        learning_rate : float
+            Taxa de aprendizagem (usado se optimizer=None).
+        momentum : float
+            Momentum para SGD (usado se optimizer=None).
+        l2_lambda : float
+            Parâmetro de regularização L2 (weight decay).
+            0.0 = sem regularização (retrocompatível com o código anterior).
+        """
         super().__init__()
+        self.l2_lambda = l2_lambda
 
         # Inicializacao He (melhor para ReLU)
         limit = np.sqrt(2.0 / input_shape)
@@ -46,6 +67,11 @@ class DenseLayer(Layer):
 
         weights_gradient = np.dot(self.input.T, output_error)
         biases_gradient = np.sum(output_error, axis=0, keepdims=True)
+
+        # Regularização L2: adicionar λ * W ao gradiente dos pesos 
+        # Não se regularizam os biases.
+        if self.l2_lambda > 0:
+            weights_gradient += self.l2_lambda * self.weights
 
         self.weights = self.weights_optimizer.update(self.weights, weights_gradient)
         self.biases = self.biases_optimizer.update(self.biases, biases_gradient)
