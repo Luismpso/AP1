@@ -5,8 +5,8 @@ def juntar_baralhar_csvs():
     ficheiros_para_juntar = [
         "data\gemini-flash.csv",
         "data\gpt-4o.csv",
-        "data\sonnet4.6.csv",
-        "data\llama3.csv",
+        "data\haiku4.5.csv",
+        "data\llama3.1.csv",
         "data\human.csv"
     ]
 
