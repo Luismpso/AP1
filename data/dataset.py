@@ -22,7 +22,7 @@ def juntar_baralhar_csvs():
     for ficheiro in ficheiros_para_juntar:
         try:
             # Ler o CSV com o separador ';'
-            df = pd.read_csv(ficheiro, sep=';').head(500)
+            df = pd.read_csv(ficheiro, sep=';')
             
             # Verificar se o ficheiro tem as colunas 'Text' e 'Label'
             falta_coluna = [col for col in colunas_base if col not in df.columns]
