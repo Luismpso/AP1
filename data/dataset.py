@@ -3,10 +3,10 @@ import pandas as pd
 def juntar_baralhar_csvs():
     # 1. Nomes dos ficheiros CSV que queres juntar
     ficheiros_para_juntar = [
-        "data\gemini-flash.csv",
+        "data\gemma3.csv",
         "data\gpt-4o.csv",
         "data\haiku4.5.csv",
-        "data\llama3.1.csv",
+        "data\llama3.2.csv",
         "data\human.csv"
     ]
 
@@ -22,7 +22,7 @@ def juntar_baralhar_csvs():
     for ficheiro in ficheiros_para_juntar:
         try:
             # Ler o CSV com o separador ';'
-            df = pd.read_csv(ficheiro, sep=';')
+            df = pd.read_csv(ficheiro, sep=';').head(500)
             
             # Verificar se o ficheiro tem as colunas 'Text' e 'Label'
             falta_coluna = [col for col in colunas_base if col not in df.columns]
