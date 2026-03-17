@@ -101,7 +101,7 @@ def train_test_split(X, Y, test_size=0.2, random_state=42, stratify=None):
 
 def prepare_text_data(texts, labels, max_features=3000, char_features=3000,
                       val_size=0.2, random_state=42, use_stratify=True,
-                      ngram_range=(1, 2)):
+                      ngram_range=(1, 2), stop_words=None):
     """
     Pipeline completo SEM sklearn: Divide PRIMEIRO, Fit APENAS NO TREINO.
 
@@ -120,6 +120,8 @@ def prepare_text_data(texts, labels, max_features=3000, char_features=3000,
     texts_val_clean = [clean_text(t) for t in texts_val]
 
     # 2. Word TF-IDF (NumPy puro)
+    # stop_words=set() → inclui stop words (não filtra nada)
+    # stop_words=None → usa a lista padrão de stop words inglesas do vectorizer
     word_vectorizer = TfidfVectorizer(
         max_features=max_features,
         ngram_range=ngram_range,
@@ -127,6 +129,7 @@ def prepare_text_data(texts, labels, max_features=3000, char_features=3000,
         min_df=2,
         max_df=0.95,
         analyzer='word',
+        stop_words=stop_words,
     )
     X_word_train = word_vectorizer.fit_transform(texts_train_clean)
     X_word_val = word_vectorizer.transform(texts_val_clean)
@@ -186,3 +189,95 @@ def transform_new_texts(texts, transformers):
     X_style = _to_dense(transformers['scaler'].transform(X_style_raw))
 
     return np.hstack([X_word, X_char, X_style])
+
+
+def stratified_k_fold(labels, n_splits=5, random_state=42):
+    """
+    Stratified K-Fold em NumPy puro.
+    Garante que cada fold mantém a proporção original das classes.
+
+    Yields
+    ------
+    train_idx, val_idx : arrays de índices para cada fold
+    """
+    rng = np.random.RandomState(random_state)
+    labels_arr = np.array(labels)
+    classes = np.unique(labels_arr)
+
+    # Índices por classe, baralhados
+    class_indices = {}
+    for cls in classes:
+        idx = np.where(labels_arr == cls)[0].copy()
+        rng.shuffle(idx)
+        class_indices[cls] = idx
+
+    # Distribuir em folds
+    folds = [[] for _ in range(n_splits)]
+    for cls in classes:
+        idx = class_indices[cls]
+        fold_sizes = np.full(n_splits, len(idx) // n_splits)
+        fold_sizes[:len(idx) % n_splits] += 1
+        start = 0
+        for i in range(n_splits):
+            folds[i].extend(idx[start:start + fold_sizes[i]])
+            start += fold_sizes[i]
+
+    for i in range(n_splits):
+        val_idx = np.array(folds[i])
+        train_idx = np.concatenate([np.array(folds[j]) for j in range(n_splits) if j != i])
+        rng2 = np.random.RandomState(random_state + i)
+        rng2.shuffle(train_idx)
+        yield train_idx, val_idx
+
+
+def prepare_fold_data(texts_train, labels_train, texts_val, labels_val,
+                      max_features=1500, char_features=1500,
+                      ngram_range=(1, 2), stop_words=None):
+    """
+    Prepara features para um fold: fit no treino, transform na validação.
+    Sem split interno — recebe já os textos divididos.
+
+    Retorna
+    -------
+    X_train, Y_train, X_val, Y_val, transformers, encoder
+    """
+    texts_train_clean = [clean_text(t) for t in texts_train]
+    texts_val_clean = [clean_text(t) for t in texts_val]
+
+    word_vectorizer = TfidfVectorizer(
+        max_features=max_features, ngram_range=ngram_range,
+        sublinear_tf=True, min_df=2, max_df=0.95,
+        analyzer='word', stop_words=stop_words,
+    )
+    X_word_train = word_vectorizer.fit_transform(texts_train_clean)
+    X_word_val = word_vectorizer.transform(texts_val_clean)
+
+    char_vectorizer = TfidfVectorizer(
+        analyzer='char_wb', ngram_range=(2, 4),
+        max_features=char_features, sublinear_tf=True,
+        min_df=2, max_df=0.98,
+    )
+    X_char_train = char_vectorizer.fit_transform(texts_train_clean)
+    X_char_val = char_vectorizer.transform(texts_val_clean)
+
+    X_style_train_raw = extract_stylistic_features(texts_train)
+    X_style_val_raw = extract_stylistic_features(texts_val)
+
+    scaler_fold = StandardScaler()
+    X_style_train = scaler_fold.fit_transform(X_style_train_raw)
+    X_style_val = scaler_fold.transform(X_style_val_raw)
+
+    X_train = np.hstack([X_word_train, X_char_train, X_style_train])
+    X_val = np.hstack([X_word_val, X_char_val, X_style_val])
+
+    encoder_fold = OneHotEncoder()
+    Y_train = encoder_fold.fit_transform(np.array(labels_train))
+    Y_val = encoder_fold.transform(np.array(labels_val))
+
+    transformers = {
+        'word_vectorizer': word_vectorizer,
+        'char_vectorizer': char_vectorizer,
+        'scaler': scaler_fold,
+    }
+
+    return X_train, Y_train, X_val, Y_val, transformers, encoder_fold
