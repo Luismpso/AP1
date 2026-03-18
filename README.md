@@ -1,25 +1,67 @@
 # 🤖 AI vs Human Text Detection
+
 **UC Aprendizagem Profunda | Mestrado em Engenharia Informática | UMinho**
 
 Este projeto visa desenvolver modelos de Deep Learning capazes de distinguir entre texto escrito por humanos e texto gerado por diferentes modelos de IA (Google, Anthropic, Meta e OpenAI).
 
 ## 🎯 Objetivos e Desafios
+
 O sistema resolve um problema de classificação multi-classe:
 
 * **Classes:** Anthropic, Google, Meta, OpenAI e Human.
 * **Restrição Crítica:** Os modelos devem ser otimizados para pequenos textos (80 a 120 palavras) focados em áreas de ciências naturais e tecnologia.
 
 ## 🛠️ Implementações
-* **Modelo de Raiz (Numpy):** Implementação manual de Redes Neuronais Profundas (DNN) e Regressão Logística, sem uso de bibliotecas de DL. Inclui regularização e Dropout.
-* **Modelos Avançados (PyTorch):** Exploração de arquiteturas complexas como RNNs, LSTMs, GRUs e Transformers pré-treinados (BERT).
+
+* **Modelo de Raiz (NumPy):** Implementação manual de Redes Neuronais Profundas (DNN) e Regressão Logística, sem uso de bibliotecas de DL. Inclui regularização (L2 e Dropout), Early Stopping e otimizador Adam.
+* **Modelos Avançados (PyTorch):** Exploração de arquiteturas como DNNs com BatchNorm, Embeddings treinável, RNNs bidirecionais (BiLSTM e BiGRU), e embeddings pré-treinados (GloVe).
+* **Validação:** Stratified K-Fold (K=5) para comparação robusta dos modelos.
 
 ## 📊 Datasets Utilizados
+
 Os dados foram compilados a partir de fontes como:
+
 * **HuggingFace:** OpenTuringBench, HC3, ai-text-detection-pile.
 * Geração própria via APIs de LLMs para balanceamento de classes.
 
+## 📁 Estrutura do Repositório
+
+```
+AP/
+├── data/                   # Datasets (treino e teste)
+├── models/                 # Modelos treinados
+│   ├── numpy.pkl           #   Melhor modelo NumPy (pesos + transformers)
+│   ├── pytorch.pkl         #   Metadados do melhor modelo PyTorch
+│   └── pytorch.pth         #   Pesos do melhor modelo PyTorch
+├── notebooks/              # Notebooks de análise e treino
+│   ├── NLP.ipynb           #   Exploração e pré-processamento de texto
+│   ├── T1.ipynb            #   Exploração e análise do dataset
+│   ├── T2.ipynb            #   Tarefa 2 — Modelos NumPy (DNN + Baseline LR)
+│   └── T3.ipynb            #   Tarefa 3 — Modelos PyTorch (DNN, LSTM, GRU, GloVe)
+├── src/                    # Código-fonte dos modelos NumPy
+│   ├── activations.py      #   Funções de ativação (ReLU, Softmax)
+│   ├── layers.py           #   Camadas (Dense, Dropout)
+│   ├── logisticregression.py  # Regressão Logística multi-classe
+│   ├── losses.py           #   Funções de custo (Cross-Entropy)
+│   ├── neuralnet.py        #   Classe NeuralNetwork (treino, avaliação)
+│   ├── optimizer.py        #   Otimizadores (SGD, Adam)
+│   ├── utils.py            #   Pipeline de features (TF-IDF, K-Fold, etc.)
+│   └── vectorizers.py      #   TF-IDF, StandardScaler, OneHotEncoder
+├── subm1/                  # Submissão 1
+│   ├── subm1-g1-MIA-A.ipynb  # Notebook de submissão — Modelo NumPy
+│   ├── subm1-g1-MIA-A.csv    # Previsões — Modelo NumPy
+│   ├── subm1-g1-MIA-B.ipynb  # Notebook de submissão — Modelo PyTorch
+│   └── subm1-g1-MIA-B.csv    # Previsões — Modelo PyTorch
+├── .gitignore
+├── env.yml                 # Ambiente Conda
+└── README.md
+```
+
 ## 👥 Grupo
-* Luís Miguel Pereira Silva - PG60390@alunos.uminho.pt
-* Pedro Miguel Soares de Albergaria Urbano dos Reis - PG59908@alunos.uminho.pt
-* Guilherme Lobo Pinto - PG60225@alunos.uminho.pt
-* Pedro Alexandre Silva Gomes - PG60289@alunos.uminho.pt
+
+| Nome | Email |
+|------|-------|
+| Luís Miguel Pereira Silva | PG60390@alunos.uminho.pt |
+| Pedro Miguel Soares de Albergaria Urbano dos Reis | PG59908@alunos.uminho.pt |
+| Guilherme Lobo Pinto | PG60225@alunos.uminho.pt |
+| Pedro Alexandre Silva Gomes | PG60289@alunos.uminho.pt |
