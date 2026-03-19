@@ -37,6 +37,17 @@ VERSOES = [
 # FUNÇÕES AUXILIARES (iguais ao teu data.py original)
 # ============================================================
 
+def guardar_linha_csv(ficheiro_csv, linha_dict):
+    """Guarda uma única linha no CSV em modo append, sem reescrever o ficheiro todo."""
+    caminho = os.path.join(PASTA_DATA, f"{ficheiro_csv}.csv")
+    df_novo = pd.DataFrame([linha_dict])
+    
+    # Verifica se o ficheiro já existe para saber se precisa de escrever os cabeçalhos
+    ficheiro_existe = os.path.exists(caminho)
+    
+    # mode='a' adiciona ao fim do ficheiro. header=not ficheiro_existe escreve o cabeçalho só se o ficheiro for novo
+    df_novo.to_csv(caminho, sep=';', index=False, encoding='utf-8', mode='a', header=not ficheiro_existe)
+
 def contar_palavras(texto):
     if not texto: return 0
     return len(str(texto).split())
@@ -217,48 +228,39 @@ def expandir_dataset():
 
     termos_disponiveis = [t for t in todos_termos if t not in termos_usados]
     random.shuffle(termos_disponiveis)
-    print(f"🆕 Disponíveis para expandir: {len(termos_disponiveis)}")
-
-    if len(termos_disponiveis) == 0:
-        print("❌ Todos os termos da lista já foram usados!")
-        return
-
-    if len(termos_disponiveis) < NOVOS_EXEMPLOS:
-        print(f"⚠️ Só há {len(termos_disponiveis)} termos disponíveis (pediste {NOVOS_EXEMPLOS})")
+    
+    quantidade_a_gerar = len(termos_disponiveis)
+    print(f"🆕 Disponíveis para procurar na Wiki: {quantidade_a_gerar}")
 
     # ---- FASE 1: Wikipedia (Human) ----
-    print(f"\n{'='*60}")
-    print(f"[Fase 1] Wikipedia — a tentar obter {NOVOS_EXEMPLOS} textos novos...")
-    print(f"{'='*60}")
+    if quantidade_a_gerar > 0:
+        print(f"\n{'='*60}")
+        print(f"[Fase 1] Wikipedia — a procurar {quantidade_a_gerar} termos novos...")
+        print(f"{'='*60}")
 
-    dados_human = []
-    termos_novos_ok = []  # termos que resultaram na Wiki → servem de base para as IAs
-
-    pbar = tqdm(total=min(NOVOS_EXEMPLOS, len(termos_disponiveis)), desc="Wikipedia")
-    for termo in termos_disponiveis:
-        if len(dados_human) >= NOVOS_EXEMPLOS:
-            break
-
-        pbar.set_postfix_str(f"{termo}")
-        texto = obter_wiki_historica(termo)
-        if texto:
-            dados_human.append({'Termo': termo, 'Text': texto, 'Label': 'Human'})
-            termos_novos_ok.append(termo)
+        pbar = tqdm(total=quantidade_a_gerar, desc="Wikipedia")
+        for termo in termos_disponiveis:
+            pbar.set_postfix_str(f"{termo}")
+            texto = obter_wiki_historica(termo)
+            
+            if texto:
+                # GUARDA IMEDIATAMENTE NO DISCO
+                linha = {'Termo': termo, 'Text': texto, 'Label': 'Human'}
+                guardar_linha_csv('human', linha)
+                
+                tqdm.write(f"\n✅ [Human] {termo} guardado ({contar_palavras(texto)}w)!")
+                tqdm.write(f"📝 {texto}\n")
+            
             pbar.update(1)
-            tqdm.write(f"\n✅ [Human] {termo} ({contar_palavras(texto)}w):")
-            tqdm.write(f"📝 {texto}\n")
-    pbar.close()
-
-    if dados_human:
-        total = acrescentar_ao_csv('human', dados_human)
-        print(f"💾 human.csv atualizado → {total} exemplos no total")
+        pbar.close()
     else:
-        print("❌ Nenhum texto novo da Wikipedia. A abortar.")
-        return
-
-    print(f"\n✅ {len(termos_novos_ok)} termos novos validados na Wiki")
+        print("✅ A base 'Human' já tem todos os termos da lista.")
 
     # ---- FASE 2+: Gerar com cada modelo de IA ----
+    # Lemos de novo o ficheiro human.csv para saber exatamente o que serve de base para as IAs.
+    # Assim, se parares o código e voltares, ele sabe continuar a partir daqui!
+    termos_base_ia = ler_termos_existentes('human')
+
     for idx, (provedor, modelo, label, nome_csv) in enumerate(VERSOES, 2):
         print(f"\n{'='*60}")
         print(f"[Fase {idx}] {label} ({modelo}) → {nome_csv}.csv")
@@ -266,31 +268,29 @@ def expandir_dataset():
 
         # Verificar quais termos já existem NESTE csv específico
         termos_ja_neste_csv = ler_termos_existentes(nome_csv)
-        termos_a_gerar = [t for t in termos_novos_ok if t not in termos_ja_neste_csv]
+        
+        # A IA só deve gerar textos para os termos que existem na Wiki (termos_base_ia) 
+        # MAS que ainda não existem no CSV desta IA específica
+        termos_a_gerar = [t for t in termos_base_ia if t not in termos_ja_neste_csv]
 
         if not termos_a_gerar:
-            print(f"⏭️  Todos os {len(termos_novos_ok)} termos já existem em {nome_csv}.csv")
+            print(f"⏭️  Todos os {len(termos_base_ia)} termos já existem em {nome_csv}.csv")
             continue
 
         print(f"🆕 A gerar {len(termos_a_gerar)} textos novos...")
-        dados_ai = []
 
         for termo in tqdm(termos_a_gerar, desc=label, unit="termo"):
             texto = gerar_ai(termo, provedor, modelo)
+            
             if texto:
-                dados_ai.append({'Termo': termo, 'Text': texto, 'Label': label})
-                tqdm.write(f"\n✅ [{label}] {termo} ({contar_palavras(texto)}w):")
+                # GUARDA IMEDIATAMENTE NO DISCO
+                linha = {'Termo': termo, 'Text': texto, 'Label': label}
+                guardar_linha_csv(nome_csv, linha)
+                
+                tqdm.write(f"\n✅ [{label}] {termo} guardado ({contar_palavras(texto)}w)!")
                 tqdm.write(f"📝 {texto}\n")
             else:
-                tqdm.write(f"⚠️ [{label}] {termo} — falhou após 3 tentativas")
-
-        if dados_ai:
-            total = acrescentar_ao_csv(nome_csv, dados_ai)
-            wcs = [contar_palavras(d['Text']) for d in dados_ai]
-            print(f"💾 {nome_csv}.csv → +{len(dados_ai)} novos, {total} total "
-                  f"(palavras: {min(wcs)}-{max(wcs)}, média: {sum(wcs)/len(wcs):.0f})")
-        else:
-            print(f"⚠️ 0 textos gerados para {nome_csv}")
+                tqdm.write(f"⚠️ [{label}] {termo} — falhou após 3 tentativas.")
 
     # ---- RESUMO FINAL ----
     print(f"\n{'='*60}")
