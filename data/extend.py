@@ -75,7 +75,9 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
         'User-Agent': 'BotEstudanteUniversitario/1.0 (mailto:luimpsoo@gmail.com) python-requests'
     }
     try:
-        time.sleep(2)
+        # 1. Espera mínima: apenas para não fazer spam à API caso existam muitos termos falhados seguidos
+        time.sleep(0.2) 
+        
         parametros_rev = {
             "action": "query", 
             "prop": "revisions", 
@@ -89,7 +91,7 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
         resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=10)
 
         if resp.status_code == 429:
-            tqdm.write(f"⚠️ Rate limit em '{termo}', a esperar 10s...")
+            tqdm.write(f"⚠️ Rate limit em '{termo}', a esperar 30s...")
             time.sleep(30)
             resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=10)
             if resp.status_code != 200:
@@ -103,11 +105,17 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
         paginas = dados.get("query", {}).get("pages", {})
         id_pagina = list(paginas.keys())[0]
         
+        # Se a página NÃO existe, a função sai aqui. Tempo perdido: apenas ~0.2 segundos + tempo de rede!
         if id_pagina == "-1" or "revisions" not in paginas[id_pagina]:
             return None
             
         id_revisao = paginas[id_pagina]["revisions"][0]["revid"]
         parametros_texto = {"action": "parse", "oldid": id_revisao, "prop": "text", "format": "json"}
+        
+        # 2. A página EXISTE! Fazemos uma pausa maior aqui para respeitar as regras da Wikipedia 
+        # antes de fazer o segundo pedido pesado (o parse do HTML).
+        time.sleep(0.8)
+        
         resp_texto = requests.get(url_api, params=parametros_texto, headers=headers, timeout=10).json()
         html = resp_texto["parse"]["text"]["*"]
         soup = BeautifulSoup(html, "html.parser")
