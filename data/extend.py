@@ -17,36 +17,23 @@ import random
 
 PASTA_DATA = r'C:\Users\Luimp\Documents\github\AP\data'
 FICHEIRO_TERMOS = os.path.join(PASTA_DATA, 'lista.txt')
+FICHEIRO_FALHAS = os.path.join(PASTA_DATA, 'termos_falhados.txt')
 
 CHAVE_OPENAI = ""
 CHAVE_ANTHROPIC = ""
 CHAVE_GEMINI = ""
 
-
-NOVOS_EXEMPLOS = 500  # quantos textos novos queres acrescentar
-
 # Mapeamento: (provedor, modelo_api, label_csv, nome_ficheiro_csv)
 VERSOES = [
-    ('OpenAI',    'gpt-4o',                      'OpenAI',    'gpt-4o'),
-    ('Anthropic', 'claude-haiku-4-5-20251001',    'Anthropic', 'haiku4.5'),
-    ('Gemini',    'gemini-flash-latest',           'Google',    'gemini-flash'),
-    ('Ollama',    'llama3.1:latest',               'Meta',      'llama3.1'),
+    ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
+    ('Google', 'gemma3:latest', 'Google', 'gemma3'),
+    ('Meta', 'llama3.2:latest', 'Meta', 'llama3.2'),
+    ('OpenAI', 'gpt-4o', 'OpenAI', 'gpt-4o'),
 ]
 
 # ============================================================
-# FUNÇÕES AUXILIARES (iguais ao teu data.py original)
+# FUNÇÕES AUXILIARES
 # ============================================================
-
-def guardar_linha_csv(ficheiro_csv, linha_dict):
-    """Guarda uma única linha no CSV em modo append, sem reescrever o ficheiro todo."""
-    caminho = os.path.join(PASTA_DATA, f"{ficheiro_csv}.csv")
-    df_novo = pd.DataFrame([linha_dict])
-    
-    # Verifica se o ficheiro já existe para saber se precisa de escrever os cabeçalhos
-    ficheiro_existe = os.path.exists(caminho)
-    
-    # mode='a' adiciona ao fim do ficheiro. header=not ficheiro_existe escreve o cabeçalho só se o ficheiro for novo
-    df_novo.to_csv(caminho, sep=';', index=False, encoding='utf-8', mode='a', header=not ficheiro_existe)
 
 def contar_palavras(texto):
     if not texto: return 0
@@ -85,13 +72,19 @@ def limpar_texto(texto):
 def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
     url_api = "https://en.wikipedia.org/w/api.php"
     headers = {
-    'User-Agent': 'BotEstudanteUniversitario/1.0 (mailto:luimpsoo@gmail.com) python-requests'
-}
+        'User-Agent': 'BotEstudanteUniversitario/1.0 (mailto:luimpsoo@gmail.com) python-requests'
+    }
     try:
         time.sleep(2)
         parametros_rev = {
-            "action": "query", "prop": "revisions", "titles": termo,
-            "rvlimit": 1, "rvstart": data_limite, "rvdir": "older", "format": "json"
+            "action": "query", 
+            "prop": "revisions", 
+            "titles": termo,
+            "rvlimit": 1, 
+            "rvstart": data_limite, 
+            "rvdir": "older", 
+            "format": "json",
+            "redirects": 1 
         }
         resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=10)
 
@@ -105,21 +98,26 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
         elif resp.status_code != 200:
             tqdm.write(f"⚠️ Wiki erro '{termo}' ({resp.status_code})")
             return None
+            
         dados = resp.json()
         paginas = dados.get("query", {}).get("pages", {})
         id_pagina = list(paginas.keys())[0]
+        
         if id_pagina == "-1" or "revisions" not in paginas[id_pagina]:
             return None
+            
         id_revisao = paginas[id_pagina]["revisions"][0]["revid"]
         parametros_texto = {"action": "parse", "oldid": id_revisao, "prop": "text", "format": "json"}
         resp_texto = requests.get(url_api, params=parametros_texto, headers=headers, timeout=10).json()
         html = resp_texto["parse"]["text"]["*"]
         soup = BeautifulSoup(html, "html.parser")
+        
         for lixo in soup.find_all(["math", "sup"]):
             lixo.decompose()
         classes_lixo = ["infobox", "metadata", "reflist", "navbox", "reference", "toc", "mwe-math-element"]
         for lixo in soup.find_all(class_=classes_lixo):
             lixo.decompose()
+            
         texto_acumulado = []
         palavras_totais = 0
         for p in soup.find_all("p"):
@@ -128,8 +126,10 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
                 texto_acumulado.append(txt)
                 palavras_totais += len(txt.split())
                 if palavras_totais > 120: break
+                
         texto_limpo = limpar_texto(" ".join(texto_acumulado))
         texto_final = truncar_texto_frases(texto_limpo)
+        
         if contar_palavras(texto_final) >= 80:
             return texto_final
     except Exception as e:
@@ -177,6 +177,7 @@ def gerar_ai(termo, provedor, modelo):
             texto_limpo = limpar_texto(texto)
             texto_final = truncar_texto_frases(texto_limpo)
             num_palavras = contar_palavras(texto_final)
+            
             if num_palavras > max_palavras:
                 melhor_texto = texto_final
                 max_palavras = num_palavras
@@ -199,19 +200,13 @@ def ler_termos_existentes(ficheiro_csv):
         return set(df['Termo'].tolist())
     return set()
 
-def acrescentar_ao_csv(ficheiro_csv, novos_dados):
-    """Acrescenta linhas novas a um CSV existente (ou cria-o se não existir)."""
+def guardar_linha_csv(ficheiro_csv, linha_dict):
+    """Guarda uma única linha no CSV em modo append."""
     caminho = os.path.join(PASTA_DATA, f"{ficheiro_csv}.csv")
-    df_novo = pd.DataFrame(novos_dados)
-
-    if os.path.exists(caminho):
-        df_existente = pd.read_csv(caminho, sep=';')
-        df_final = pd.concat([df_existente, df_novo], ignore_index=True)
-    else:
-        df_final = df_novo
-
-    df_final.to_csv(caminho, sep=';', index=False, encoding='utf-8')
-    return len(df_final)
+    df_novo = pd.DataFrame([linha_dict])
+    ficheiro_existe = os.path.exists(caminho)
+    # Escreve o cabeçalho apenas se o ficheiro não existir
+    df_novo.to_csv(caminho, sep=';', index=False, encoding='utf-8', mode='a', header=not ficheiro_existe)
 
 # ============================================================
 # FLUXO PRINCIPAL
@@ -244,12 +239,15 @@ def expandir_dataset():
             texto = obter_wiki_historica(termo)
             
             if texto:
-                # GUARDA IMEDIATAMENTE NO DISCO
                 linha = {'Termo': termo, 'Text': texto, 'Label': 'Human'}
                 guardar_linha_csv('human', linha)
                 
-                tqdm.write(f"\n✅ [Human] {termo} guardado ({contar_palavras(texto)}w)!")
+                tqdm.write(f"\n✅ [Human] {termo} guardado ({contar_palavras(texto)}w):")
                 tqdm.write(f"📝 {texto}\n")
+            else:
+                # Se falhar, guarda o termo no ficheiro de falhas para análise posterior
+                with open(FICHEIRO_FALHAS, "a", encoding="utf-8") as f_erros:
+                    f_erros.write(termo + "\n")
             
             pbar.update(1)
         pbar.close()
@@ -257,8 +255,7 @@ def expandir_dataset():
         print("✅ A base 'Human' já tem todos os termos da lista.")
 
     # ---- FASE 2+: Gerar com cada modelo de IA ----
-    # Lemos de novo o ficheiro human.csv para saber exatamente o que serve de base para as IAs.
-    # Assim, se parares o código e voltares, ele sabe continuar a partir daqui!
+    # Relê o human.csv para saber quais termos foram extraídos com sucesso
     termos_base_ia = ler_termos_existentes('human')
 
     for idx, (provedor, modelo, label, nome_csv) in enumerate(VERSOES, 2):
@@ -266,15 +263,11 @@ def expandir_dataset():
         print(f"[Fase {idx}] {label} ({modelo}) → {nome_csv}.csv")
         print(f"{'='*60}")
 
-        # Verificar quais termos já existem NESTE csv específico
         termos_ja_neste_csv = ler_termos_existentes(nome_csv)
-        
-        # A IA só deve gerar textos para os termos que existem na Wiki (termos_base_ia) 
-        # MAS que ainda não existem no CSV desta IA específica
         termos_a_gerar = [t for t in termos_base_ia if t not in termos_ja_neste_csv]
 
         if not termos_a_gerar:
-            print(f"⏭️  Todos os {len(termos_base_ia)} termos já existem em {nome_csv}.csv")
+            print(f"⏭️  Todos os termos já existem em {nome_csv}.csv")
             continue
 
         print(f"🆕 A gerar {len(termos_a_gerar)} textos novos...")
@@ -283,11 +276,10 @@ def expandir_dataset():
             texto = gerar_ai(termo, provedor, modelo)
             
             if texto:
-                # GUARDA IMEDIATAMENTE NO DISCO
                 linha = {'Termo': termo, 'Text': texto, 'Label': label}
                 guardar_linha_csv(nome_csv, linha)
                 
-                tqdm.write(f"\n✅ [{label}] {termo} guardado ({contar_palavras(texto)}w)!")
+                tqdm.write(f"\n✅ [{label}] {termo} guardado ({contar_palavras(texto)}w):")
                 tqdm.write(f"📝 {texto}\n")
             else:
                 tqdm.write(f"⚠️ [{label}] {termo} — falhou após 3 tentativas.")
@@ -299,9 +291,12 @@ def expandir_dataset():
     for f in sorted(os.listdir(PASTA_DATA)):
         if f.endswith('.csv') and f != 'dataset.csv':
             caminho = os.path.join(PASTA_DATA, f)
-            df_tmp = pd.read_csv(caminho, sep=';')
-            label = df_tmp['Label'].iloc[0] if 'Label' in df_tmp.columns else '?'
-            print(f"  📄 {f:<25} → {len(df_tmp):>4} exemplos  (Label: {label})")
+            try:
+                df_tmp = pd.read_csv(caminho, sep=';')
+                label = df_tmp['Label'].iloc[0] if 'Label' in df_tmp.columns else '?'
+                print(f"  📄 {f:<25} → {len(df_tmp):>4} exemplos  (Label: {label})")
+            except pd.errors.EmptyDataError:
+                print(f"  📄 {f:<25} →    0 exemplos (Ficheiro Vazio)")
 
 if __name__ == "__main__":
     expandir_dataset()
