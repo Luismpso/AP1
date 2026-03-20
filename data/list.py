@@ -1,10 +1,8 @@
 import os
 
-# ==========================================
-# CONFIGURAÇÕES
-# ==========================================
-FICHEIRO_LISTA = 'lista.txt'                # A tua lista principal
-FICHEIRO_FALHAS = 'termos_falhados.txt'     # A lista dos termos que a Wiki não encontra
+# Configurações 
+FICHEIRO_LISTA = 'list.txt'                # A tua lista principal
+FICHEIRO_FALHAS = 'fail.txt'     # A lista dos termos que a Wiki não encontra
 
 # Podes adicionar aqui quantos ficheiros quiseres juntar à tua lista principal!
 # Exemplo: ['nova_lista.txt', 'termos_extraidos_mega.txt']
@@ -21,15 +19,11 @@ def executar_manutencao():
     print("🛠️ A INICIAR MANUTENÇÃO MASTER DA LISTA...\n")
     print("-" * 60)
 
-    # ---------------------------------------------------------
-    # 1. CARREGAR A LISTA PRINCIPAL
-    # ---------------------------------------------------------
+    # 1. Carregar a lista original
     termos_totais = carregar_termos(FICHEIRO_LISTA)
     print(f"📄 Lidos {len(termos_totais)} termos da '{FICHEIRO_LISTA}' original.")
 
-    # ---------------------------------------------------------
-    # 2. JUNTAR AS NOVAS LISTAS
-    # ---------------------------------------------------------
+    # 2. Juntar as listas extra 
     termos_adicionados = 0
     for ficheiro_extra in LISTAS_A_JUNTAR:
         if os.path.exists(ficheiro_extra):
@@ -44,17 +38,13 @@ def executar_manutencao():
     print(f"📊 Total bruto antes da limpeza: {total_bruto} termos.")
     print("-" * 60)
 
-    # ---------------------------------------------------------
-    # 3. REMOVER DUPLICADOS
-    # ---------------------------------------------------------
+    # 3. Remover os termos duplicados
     # O dict.fromkeys remove os repetidos mas mantém a ordem de chegada
     termos_unicos = list(dict.fromkeys(termos_totais))
     duplicados_removidos = total_bruto - len(termos_unicos)
     print(f"✂️  Removidos {duplicados_removidos} termos duplicados.")
 
-    # ---------------------------------------------------------
-    # 4. REMOVER OS TERMOS QUE FALHAM NA WIKI
-    # ---------------------------------------------------------
+    # 4. Remover os termos que já falharam na Wiki 
     falhas_removidas = 0
     termos_finais = []
     
@@ -73,9 +63,7 @@ def executar_manutencao():
 
     print("-" * 60)
 
-    # ---------------------------------------------------------
-    # 5. GUARDAR O RESULTADO FINAL
-    # ---------------------------------------------------------
+    # 5. Escrever a lista final limpa de volta para o ficheiro principal
     with open(FICHEIRO_LISTA, 'w', encoding='utf-8') as f:
         for termo in termos_finais:
             f.write(termo + "\n")

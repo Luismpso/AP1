@@ -4,36 +4,57 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import ollama
-from openai import OpenAI
 import anthropic
-from google import genai
 from tqdm import tqdm
 import re
 import random
+import uuid
+import json
 
-# ============================================================
-# CONFIGURAÇÕES — adapta os caminhos e chaves antes de correr
-# ============================================================
+# Configurações e constantes
 
-PASTA_DATA = r'C:\Users\Luimp\Documents\github\AP\data'
-FICHEIRO_TERMOS = os.path.join(PASTA_DATA, 'lista.txt')
-FICHEIRO_FALHAS = os.path.join(PASTA_DATA, 'termos_falhados.txt')
+PASTA_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+FICHEIRO_TERMOS = os.path.join(PASTA_DATA, 'list.txt')
+FICHEIRO_FALHAS = os.path.join(PASTA_DATA, 'fail.txt')
 
-CHAVE_OPENAI = ""
 CHAVE_ANTHROPIC = ""
-CHAVE_GEMINI = ""
+
+CONTAS_IAEDU = [
+    {
+        "nome": "Conta 1",
+        "api_key": "sk-usr-5gned314t8prpi6cakj0v342vreij3mzh7x",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmmuw75o1atqyhv015ja9fmo2"
+    },
+    {
+        "nome": "Conta 2",
+        "api_key": "sk-usr-dq0sqm5wqdbxtkk2tez3oqr7p726zrfhk5u",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmmytnq8rhus4hv01e3yjj881"
+    },
+    {
+        "nome": "Conta 3",
+        "api_key": "sk-usr-23gdi3yjieky9p4prsprwk4fattnmiwtdg5",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmmytlxmdhunehv01w2ns6sdp"
+    },
+    {
+        "nome": "Conta 4",
+        "api_key": "sk-usr-4wm81k1mxprmejf3ywwykcq2k9667xpnsbv",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmmz16ptfigwjhv01dckivs9u"
+    }
+]
 
 # Mapeamento: (provedor, modelo_api, label_csv, nome_ficheiro_csv)
 VERSOES = [
-    ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
-    ('Google', 'gemma3:latest', 'Google', 'gemma3'),
-    ('Meta', 'llama3.2:latest', 'Meta', 'llama3.2'),
-    ('OpenAI', 'gpt-4o', 'OpenAI', 'gpt-4o'),
+    # ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
+    # ('IAEdu',     'gpt-4o',                    'OpenAI',    'gpt-4o'),
+    ('Ollama',    'gemma3:latest',             'Google',    'gemma3'), 
+    ('Ollama',    'llama3.2:latest',           'Meta',      'llama3.2'),   
 ]
 
-# ============================================================
-# FUNÇÕES AUXILIARES
-# ============================================================
+# Funções auxiliares
 
 def contar_palavras(texto):
     if not texto: return 0
@@ -65,9 +86,7 @@ def limpar_texto(texto):
     texto_str = re.sub(r'\{.*?\}', '', texto_str)
     return texto_str.strip()
 
-# ============================================================
-# EXTRATORES
-# ============================================================
+# Extratores
 
 def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
     url_api = "https://en.wikipedia.org/w/api.php"
@@ -75,56 +94,42 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
         'User-Agent': 'BotEstudanteUniversitario/1.0 (mailto:luimpsoo@gmail.com) python-requests'
     }
     try:
-        # 1. Espera mínima: apenas para não fazer spam à API caso existam muitos termos falhados seguidos
         time.sleep(0.2) 
         
         parametros_rev = {
-            "action": "query", 
-            "prop": "revisions", 
-            "titles": termo,
-            "rvlimit": 1, 
-            "rvstart": data_limite, 
-            "rvdir": "older", 
-            "format": "json",
-            "redirects": 1 
+            "action": "query", "prop": "revisions", "titles": termo,
+            "rvlimit": 1, "rvstart": data_limite, "rvdir": "older", 
+            "format": "json", "redirects": 1 
         }
-        resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=10)
+        resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=20)
 
         if resp.status_code == 429:
             tqdm.write(f"⚠️ Rate limit em '{termo}', a esperar 30s...")
             time.sleep(30)
-            resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=10)
-            if resp.status_code != 200:
-                return None
-
+            resp = requests.get(url_api, params=parametros_rev, headers=headers, timeout=20)
+            if resp.status_code != 200: return None
         elif resp.status_code != 200:
-            tqdm.write(f"⚠️ Wiki erro '{termo}' ({resp.status_code})")
             return None
             
         dados = resp.json()
         paginas = dados.get("query", {}).get("pages", {})
         id_pagina = list(paginas.keys())[0]
         
-        # Se a página NÃO existe, a função sai aqui. Tempo perdido: apenas ~0.2 segundos + tempo de rede!
         if id_pagina == "-1" or "revisions" not in paginas[id_pagina]:
             return None
             
         id_revisao = paginas[id_pagina]["revisions"][0]["revid"]
         parametros_texto = {"action": "parse", "oldid": id_revisao, "prop": "text", "format": "json"}
         
-        # 2. A página EXISTE! Fazemos uma pausa maior aqui para respeitar as regras da Wikipedia 
-        # antes de fazer o segundo pedido pesado (o parse do HTML).
         time.sleep(0.8)
         
-        resp_texto = requests.get(url_api, params=parametros_texto, headers=headers, timeout=10).json()
+        resp_texto = requests.get(url_api, params=parametros_texto, headers=headers, timeout=20).json()
         html = resp_texto["parse"]["text"]["*"]
         soup = BeautifulSoup(html, "html.parser")
         
-        for lixo in soup.find_all(["math", "sup"]):
-            lixo.decompose()
+        for lixo in soup.find_all(["math", "sup"]): lixo.decompose()
         classes_lixo = ["infobox", "metadata", "reflist", "navbox", "reference", "toc", "mwe-math-element"]
-        for lixo in soup.find_all(class_=classes_lixo):
-            lixo.decompose()
+        for lixo in soup.find_all(class_=classes_lixo): lixo.decompose()
             
         texto_acumulado = []
         palavras_totais = 0
@@ -138,8 +143,7 @@ def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
         texto_limpo = limpar_texto(" ".join(texto_acumulado))
         texto_final = truncar_texto_frases(texto_limpo)
         
-        if contar_palavras(texto_final) >= 80:
-            return texto_final
+        if contar_palavras(texto_final) >= 80: return texto_final
     except Exception as e:
         tqdm.write(f"🛑 Erro Wiki '{termo}': {e}")
     return None
@@ -154,17 +158,67 @@ def gerar_ai(termo, provedor, modelo):
     )
     melhor_texto = ""
     max_palavras = 0
+    
     for tentativa in range(3):
         try:
             texto = ""
-            if provedor == "OpenAI":
-                cliente = OpenAI(api_key=CHAVE_OPENAI)
-                resposta = cliente.chat.completions.create(
-                    model=modelo,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=200
-                )
-                texto = resposta.choices[0].message.content
+            conta_atual = None # Reset a cada tentativa para o IAEdu
+            
+            if provedor == "IAEdu":
+                conta_atual = random.choice(CONTAS_IAEDU)
+                headers = {"x-api-key": conta_atual["api_key"]}
+                thread_nova = str(uuid.uuid4())
+                
+                payload = {
+                    "channel_id": (None, conta_atual["channel_id"]),
+                    "thread_id": (None, thread_nova),
+                    "user_info": (None, "{}"),
+                    "message": (None, prompt)
+                }
+                
+                resp = requests.post(conta_atual["endpoint"], headers=headers, files=payload, stream=True, timeout=30)
+                
+                texto_acumulado = []
+                bateu_no_limite = False
+                
+                for linha in resp.iter_lines():
+                    if linha:
+                        linha_str = linha.decode('utf-8').strip()
+                        try:
+                            # O IAEdu envia JSONs puros linha a linha
+                            dados = json.loads(linha_str)
+                            tipo = dados.get("type", "")
+                            conteudo = dados.get("content", "")
+                            
+                            # Se a API nos mandar parar
+                            if tipo == "error":
+                                if "429" in str(conteudo) or "Rate limit" in str(conteudo):
+                                    bateu_no_limite = True
+                                    break # Sai do ciclo de leitura
+                                else:
+                                    tqdm.write(f"⚠️ Erro IAEdu ({conta_atual['nome']}): {conteudo}")
+                                    
+                            # Se for texto da IA (ignoramos os avisos de 'start', 'done' e 'error')
+                            elif tipo not in ["start", "done", "error"]:
+                                # A NOSSA NOVA DEFESA: Se o conteúdo for um dicionário (dict), 
+                                # tentamos tirar o texto lá de dentro. Se não der, convertemos para string.
+                                if isinstance(conteudo, dict):
+                                    conteudo = conteudo.get("text", conteudo.get("value", ""))
+                                
+                                # Só adiciona à lista se for realmente um texto válido (string)
+                                if isinstance(conteudo, str) and conteudo:
+                                    texto_acumulado.append(conteudo)
+                                
+                        except json.JSONDecodeError:
+                            pass # Se a linha não for JSON válido, ignora
+
+                if bateu_no_limite:
+                    tqdm.write(f"⏳ Rate Limit na {conta_atual['nome']}! A dormir 60 segundos...")
+                    time.sleep(60)
+                    continue # Salta para a próxima tentativa do loop (e vai escolher uma conta aleatória nova!)
+
+                texto = "".join(texto_acumulado).strip()
+                
             elif provedor == "Anthropic":
                 cliente = anthropic.Anthropic(api_key=CHAVE_ANTHROPIC)
                 resposta = cliente.messages.create(
@@ -172,12 +226,7 @@ def gerar_ai(termo, provedor, modelo):
                     messages=[{"role": "user", "content": prompt}]
                 )
                 texto = resposta.content[0].text
-            elif provedor == "Gemini":
-                cliente_gemini = genai.Client(api_key=CHAVE_GEMINI)
-                resposta = cliente_gemini.models.generate_content(
-                    model=modelo, contents=prompt
-                )
-                texto = resposta.text
+                
             elif provedor == "Ollama":
                 resposta = ollama.chat(model=modelo, messages=[{'role': 'user', 'content': prompt}])
                 texto = resposta['message']['content']
@@ -191,17 +240,18 @@ def gerar_ai(termo, provedor, modelo):
                 max_palavras = num_palavras
             if num_palavras >= 80:
                 return texto_final
+                
         except Exception as e:
-            tqdm.write(f"🛑 Erro '{modelo}' em '{termo}': {e}")
+            # Sistema inteligente de mensagens de erro para saberes quem falhou!
+            nome_erro = conta_atual['nome'] if (provedor == "IAEdu" and conta_atual) else modelo
+            tqdm.write(f"🛑 Erro '{nome_erro}' em '{termo}': {e}")
             time.sleep(2)
+            
     return melhor_texto if melhor_texto else None
 
-# ============================================================
-# FUNÇÕES DE LEITURA / ESCRITA
-# ============================================================
+# Funções de leitura/escrita CSV
 
 def ler_termos_existentes(ficheiro_csv):
-    """Lê os termos já presentes num CSV existente."""
     caminho = os.path.join(PASTA_DATA, f"{ficheiro_csv}.csv")
     if os.path.exists(caminho):
         df = pd.read_csv(caminho, sep=';')
@@ -209,19 +259,14 @@ def ler_termos_existentes(ficheiro_csv):
     return set()
 
 def guardar_linha_csv(ficheiro_csv, linha_dict):
-    """Guarda uma única linha no CSV em modo append."""
     caminho = os.path.join(PASTA_DATA, f"{ficheiro_csv}.csv")
     df_novo = pd.DataFrame([linha_dict])
     ficheiro_existe = os.path.exists(caminho)
-    # Escreve o cabeçalho apenas se o ficheiro não existir
     df_novo.to_csv(caminho, sep=';', index=False, encoding='utf-8', mode='a', header=not ficheiro_existe)
 
-# ============================================================
-# FLUXO PRINCIPAL
-# ============================================================
+# Fluxo principal
 
 def expandir_dataset():
-    # 1. Carregar termos da lista e descobrir quais já foram usados
     with open(FICHEIRO_TERMOS, 'r', encoding='utf-8') as f:
         todos_termos = list(dict.fromkeys([l.strip() for l in f if l.strip()]))
 
@@ -235,7 +280,7 @@ def expandir_dataset():
     quantidade_a_gerar = len(termos_disponiveis)
     print(f"🆕 Disponíveis para procurar na Wiki: {quantidade_a_gerar}")
 
-    # ---- FASE 1: Wikipedia (Human) ----
+    # FASE 1: Wikipedia (Human) 
     if quantidade_a_gerar > 0:
         print(f"\n{'='*60}")
         print(f"[Fase 1] Wikipedia — a procurar {quantidade_a_gerar} termos novos...")
@@ -253,7 +298,6 @@ def expandir_dataset():
                 tqdm.write(f"\n✅ [Human] {termo} guardado ({contar_palavras(texto)}w):")
                 tqdm.write(f"📝 {texto}\n")
             else:
-                # Se falhar, guarda o termo no ficheiro de falhas para análise posterior
                 with open(FICHEIRO_FALHAS, "a", encoding="utf-8") as f_erros:
                     f_erros.write(termo + "\n")
             
@@ -262,8 +306,7 @@ def expandir_dataset():
     else:
         print("✅ A base 'Human' já tem todos os termos da lista.")
 
-    # ---- FASE 2+: Gerar com cada modelo de IA ----
-    # Relê o human.csv para saber quais termos foram extraídos com sucesso
+    # FASE 2+: Gerar com cada modelo de IA
     termos_base_ia = ler_termos_existentes('human')
 
     for idx, (provedor, modelo, label, nome_csv) in enumerate(VERSOES, 2):
@@ -292,7 +335,7 @@ def expandir_dataset():
             else:
                 tqdm.write(f"⚠️ [{label}] {termo} — falhou após 3 tentativas.")
 
-    # ---- RESUMO FINAL ----
+    # Resumo final
     print(f"\n{'='*60}")
     print("📊 RESUMO FINAL")
     print(f"{'='*60}")
