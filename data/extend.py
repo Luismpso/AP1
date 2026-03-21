@@ -17,7 +17,7 @@ PASTA_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 FICHEIRO_TERMOS = os.path.join(PASTA_DATA, 'list.txt')
 FICHEIRO_FALHAS = os.path.join(PASTA_DATA, 'fail.txt')
 
-CHAVE_ANTHROPIC = ""
+CHAVE_ANTHROPIC = "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"
 
 CONTAS_IAEDU = [
     {
@@ -48,10 +48,10 @@ CONTAS_IAEDU = [
 
 # Mapeamento: (provedor, modelo_api, label_csv, nome_ficheiro_csv)
 VERSOES = [
-    # ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
+    ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
     # ('IAEdu',     'gpt-4o',                    'OpenAI',    'gpt-4o'),
-    ('Ollama',    'gemma3:latest',             'Google',    'gemma3'), 
-    ('Ollama',    'llama3.2:latest',           'Meta',      'llama3.2'),   
+    # ('Ollama',    'gemma3:latest',             'Google',    'gemma3'), 
+    # ('Ollama',    'llama3.2:latest',           'Meta',      'llama3.2'),   
 ]
 
 # Funções auxiliares
