@@ -1,2 +1,12 @@
-data/glove/
+# Ignorar ficheiros compactados e pesados
+*.zip
+*.rar
+*.7z
+
+# Ignorar a pasta de vetores (embeddings)
+data/vectors/
+
+# Ignorar checkpoints de modelos e pastas de ambiente
+.venv/
 __pycache__/
+.ipynb_checkpoints/

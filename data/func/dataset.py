@@ -1,17 +1,21 @@
 import pandas as pd
+import os
 
 def juntar_baralhar_csvs():
+    PASTA_FUNC = os.path.dirname(os.path.abspath(__file__))
+    # Sobe um nível para a pasta AP (raiz) e entra em 'data'
+    PASTA_DATA = os.path.abspath(os.path.join(PASTA_FUNC, '..'))
     # 1. Nomes dos ficheiros CSV que queres juntar
     ficheiros_para_juntar = [
-        "data\gemma3.csv",
-        "data\gpt-4o.csv",
-        "data\haiku4.5.csv",
-        "data\llama3.2.csv",
-        "data\human.csv"
+        os.path.join(PASTA_DATA, "data", "google.csv"),
+        os.path.join(PASTA_DATA, "data", "openai.csv"),
+        os.path.join(PASTA_DATA, "data", "anthropic.csv"),
+        os.path.join(PASTA_DATA, "data", "meta.csv"),
+        os.path.join(PASTA_DATA, "data", "human.csv")
     ]
 
     # 2. Nome do ficheiro final
-    ficheiro_final = "data\dataset.csv"
+    ficheiro_final = os.path.join(PASTA_DATA, "data", "dataset.csv")
 
     # Queremos garantir que lemos pelo menos o Text e Label de cada um
     colunas_base = ['Text', 'Label']

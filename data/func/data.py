@@ -1,4 +1,3 @@
-
 import os
 import time
 import pandas as pd
@@ -12,26 +11,35 @@ import re
 from google import genai
 
 # 1. Configurações e Variáveis Globais
+PASTA_FUNC = os.path.dirname(os.path.abspath(__file__))
+PASTA_DATA = os.path.abspath(os.path.join(PASTA_FUNC, '..'))
+PASTA_RESOURCES = os.path.join(PASTA_DATA, 'resources')
+PASTA_MODELS = os.path.join(PASTA_DATA, 'models') # Onde serão guardados os testes
 
-PASTA_WIKI = r'..\data'
-FICHEIRO_HUMAN = os.path.join(PASTA_WIKI, 'Human.csv')
+# Ficheiros de entrada
+FICHEIRO_HUMAN = os.path.join(PASTA_DATA, 'human.csv')
+FICHEIRO_LISTA = os.path.join(PASTA_RESOURCES, 'list.txt')
 
-# --- CHAVES DE API ---
+# Chaves de API 
 CHAVE_OPENAI = ""
 CHAVE_ANTHROPIC = ""
 CHAVE_GEMINI = ""
 
 VERSOES = [
     # ======== 1º: OpenAI ========
+    # ('OpenAI', 'gpt-3.5-turbo', 'OpenAI', 'gpt-3.5-turbo'),
     # ('OpenAI', 'gpt-4o-mini', 'OpenAI', 'gpt-4o-mini'),  
+    # ('OpenAI', 'gpt-5o-mini', 'OpenAI', 'gpt-5o-mini'),
     # ('OpenAI', 'gpt-4o', 'OpenAI', 'gpt-4o'), 
 
     # ======== 2º: Anthropic (API) ========
-    # ('Anthropic', 'claude-3-5-haiku-20241022', 'Anthropic', 'haiku4.5'), 
+    # ('Anthropic', 'claude-3-5-haiku-20250101', 'Anthropic', 'haiku4.5'), 
     # ('Anthropic', 'claude-sonnet-4-6', 'Anthropic', 'sonnet4.6'), 
+    # ('Anthropic', 'claude-opus-4-6', 'Anthropic', 'opus4.6'),
 
     # ======== 3º: Google Gemini (API) ========
     # ('Gemini', 'gemini-flash-latest', 'Google', 'gemini-flash'),
+    # ('Gemini', 'gemini-pro-latest', 'Google', 'gemini-pro'),
 
     # ======== 4º: Ollama local ========
     # ('Ollama', 'llama3:latest', 'Meta', 'llama3'),          
@@ -42,7 +50,7 @@ VERSOES = [
     ('Ollama', 'gemma3:latest', 'Google', 'gemma3'),    
 ]
 
-# 2. Funções Auxiliares
+# 2. Funções Auxiliares (Limpeza e Truncagem)
 def contar_palavras(texto):
     if not texto: return 0
     return len(str(texto).split())
@@ -73,7 +81,7 @@ def limpar_texto(texto):
     texto_str = re.sub(r'\{.*?\}', '', texto_str)
     return texto_str.strip()
 
-# 3. Gerador de Textos com IA
+# 3. Geração de Versões com IA (OpenAI, Anthropic, Gemini, Ollama)
 
 def gerar_ai(termo, provedor, modelo):
     prompt = (
@@ -118,39 +126,41 @@ def gerar_ai(termo, provedor, modelo):
             texto_limpo = limpar_texto(texto)
             texto_final = truncar_texto_frases(texto_limpo)
             num_palavras = contar_palavras(texto_final)
+            
             if num_palavras > max_palavras:
                 melhor_texto = texto_final
                 max_palavras = num_palavras
-            if num_palavras >= 80:
+                
+            if 80 <= num_palavras <= 120:
                 return texto_final
+                
         except Exception as e:
             tqdm.write(f"🛑 Erro com '{modelo}' em '{termo}': {e}")
             time.sleep(2)
+            
     return melhor_texto if melhor_texto else None
 
-# 4. Fluxo Principal: Gerar Versões e Guardar CSVs
+# 4. Fluxo Principal: Gerar as Versões e Guardar
 
 def gerar_versoes():
-    # ---- Ler termos do Human.csv ----
+    # Criar pasta models se não existir
+    if not os.path.exists(PASTA_MODELS):
+        os.makedirs(PASTA_MODELS)
+        print(f"📁 Pasta criada: {PASTA_MODELS}")
+
     if not os.path.exists(FICHEIRO_HUMAN):
-        print(f"❌ Human.csv não encontrado em: {FICHEIRO_HUMAN}")
+        print(f"❌ Erro: '{FICHEIRO_HUMAN}' não encontrado.")
         return
 
     df_human = pd.read_csv(FICHEIRO_HUMAN, sep=';')
     termos = df_human['Termo'].tolist()
-    print(f"📖 {len(termos)} termos carregados do Human.csv\n")
-
-    if not VERSOES:
-        print("⚠️ Nenhuma versão descomentada em VERSOES.")
-        return
+    print(f"📖 {len(termos)} termos carregados para processamento.\n")
 
     for i, (provedor, modelo, label, nome_csv) in enumerate(VERSOES, 1):
-        ficheiro = os.path.join(PASTA_WIKI, f'{nome_csv}.csv')
+        ficheiro = os.path.join(PASTA_MODELS, f'{nome_csv}.csv') # Gravação em /models/
 
-        # Saltar se já existe
         if os.path.exists(ficheiro):
-            df_existente = pd.read_csv(ficheiro, sep=';')
-            print(f"[{i}/{len(VERSOES)}] ⏭️  {nome_csv}.csv já existe ({len(df_existente)} exemplos). A saltar...\n")
+            print(f"[{i}/{len(VERSOES)}] ⏭️  {nome_csv}.csv já existe. A saltar...")
             continue
 
         print(f"[{i}/{len(VERSOES)}] A gerar: {nome_csv}.csv ({provedor} → {modelo})")
@@ -160,70 +170,11 @@ def gerar_versoes():
             texto = gerar_ai(termo, provedor, modelo)
             if texto:
                 dados.append({'Termo': termo, 'Text': texto, 'Label': label})
-                
-                tqdm.write(f"\n✅ [{label}] {termo} ({contar_palavras(texto)} palavras):")
-                tqdm.write(f"📝 {texto}\n")
 
-        #  Guardar CSV logo que acaba esta versão 
         if dados:
             df = pd.DataFrame(dados)
             df.to_csv(ficheiro, sep=';', index=False, encoding='utf-8')
-            wcs = [contar_palavras(d['Text']) for d in dados]
-            print(f"\n   💾 GUARDADO: {nome_csv}.csv → {len(dados)}/{len(termos)} válidos "
-                  f"(palavras: {min(wcs)}-{max(wcs)}, média: {sum(wcs)/len(wcs):.0f})\n")
-        else:
-            print(f"\n   ⚠️ 0 textos gerados para {nome_csv}!\n")
-
-    for f in sorted(os.listdir(PASTA_WIKI)):
-        if f.endswith('.csv'):
-            caminho = os.path.join(PASTA_WIKI, f)
-            df_tmp = pd.read_csv(caminho, sep=';')
-            label = df_tmp['Label'].iloc[0] if 'Label' in df_tmp.columns else '?'
-            print(f"  📄 {f:<25} → {len(df_tmp):>4} exemplos  (Label: {label})")
-
-# 5. Compilador
-
-def compilar_dataset(ficheiros, saida='dataset.csv'):
-    caminho_saida = os.path.join(PASTA_WIKI, saida)
-    dfs = []
-
-    for entrada in ficheiros:
-        if isinstance(entrada, tuple):
-            nome, n = entrada
-        else:
-            nome, n = entrada, None
-
-        caminho = os.path.join(PASTA_WIKI, f"{nome}.csv")
-        if not os.path.exists(caminho):
-            print(f"⚠️ Não encontrado: {caminho}")
-            continue
-
-        df = pd.read_csv(caminho, sep=';')
-        if n and n < len(df):
-            df = df.sample(n=n, random_state=42)
-
-        label = df['Label'].iloc[0] if 'Label' in df.columns else '?'
-        print(f"  📄 {nome}.csv → {len(df)} exemplos (Label: {label})")
-        dfs.append(df)
-
-    if not dfs:
-        print("❌ Nenhum ficheiro válido.")
-        return
-
-    df_final = pd.concat(dfs, ignore_index=True)
-    df_final = df_final.drop(columns=['Termo'], errors='ignore')
-    df_final = df_final.sample(frac=1, random_state=42).reset_index(drop=True)
-    df_final.insert(0, 'ID', [f"D1-{i+1}" for i in range(len(df_final))])
-    df_final.to_csv(caminho_saida, sep=';', index=False, encoding='utf-8')
-
-    print(f"\n🎉 Dataset final: {saida} ({len(df_final)} exemplos)")
-    print(f"\nDistribuição:")
-    print(df_final['Label'].value_counts().to_string())
-
-    df_final['wc'] = df_final['Text'].apply(lambda x: len(str(x).split()))
-    fora = df_final[(df_final['wc'] < 80) | (df_final['wc'] > 120)]
-    if len(fora) > 0:
-        print(f"\n⚠️ {len(fora)} textos fora do intervalo 80-120 palavras!")
+            print(f"   💾 GUARDADO: {ficheiro}\n")
 
 if __name__ == "__main__":
     gerar_versoes()
