@@ -14,46 +14,66 @@ O sistema resolve um problema de classificação multi-classe:
 ## 🛠️ Implementações
 
 * **Modelo de Raiz (NumPy):** Implementação manual de Redes Neuronais Profundas (DNN) e Regressão Logística, sem uso de bibliotecas de DL. Inclui regularização (L2 e Dropout), Early Stopping e otimizador Adam.
-* **Modelos Avançados (PyTorch):** Exploração de arquiteturas como DNNs com BatchNorm, Embeddings treinável, RNNs bidirecionais (BiLSTM e BiGRU), e embeddings pré-treinados (GloVe).
+* **Modelos Avançados (PyTorch):** Exploração de arquiteturas como DNNs com BatchNorm e LeakyReLU, Embeddings treinável, RNNs bidirecionais (BiLSTM e BiGRU), e embeddings pré-treinados (GloVe). Inclui Grid Search de hiperparâmetros.
+* **Transformers (HuggingFace):** Fine-tuning de modelos pré-treinados (BERT, DistilBERT, RoBERTa) com estratégias de freeze parcial e Grid Search.
 * **Validação:** Stratified K-Fold (K=5) para comparação robusta dos modelos.
 
 ## 📊 Datasets Utilizados
 
 Os dados foram compilados a partir de fontes como:
 
-* **HuggingFace:** OpenTuringBench, HC3, ai-text-detection-pile.
-* Geração própria via APIs de LLMs para balanceamento de classes.
+* **HuggingFace:** OpenTuringBench, HC3, ai-text-detection-pile, M4.
+* **Geração própria** via APIs de LLMs (GPT-4o, Gemini, Llama, Claude, etc.) para balanceamento de classes.
 
 ## 📁 Estrutura do Repositório
 
 ```
 AP/
-├── data/                   # Datasets (treino e teste)
-├── models/                 # Modelos treinados
-│   ├── numpy.pkl           #   Melhor modelo NumPy (pesos + transformers)
-│   ├── pytorch.pkl         #   Metadados do melhor modelo PyTorch
-│   └── pytorch.pth         #   Pesos do melhor modelo PyTorch
-├── notebooks/              # Notebooks de análise e treino
-│   ├── NLP.ipynb           #   Exploração e pré-processamento de texto
-│   ├── T1.ipynb            #   Exploração e análise do dataset
-│   ├── T2.ipynb            #   Tarefa 2 — Modelos NumPy (DNN + Baseline LR)
-│   └── T3.ipynb            #   Tarefa 3 — Modelos PyTorch (DNN, LSTM, GRU, GloVe)
-├── src/                    # Código-fonte dos modelos NumPy
-│   ├── activations.py      #   Funções de ativação (ReLU, Softmax)
-│   ├── layers.py           #   Camadas (Dense, Dropout)
-│   ├── logisticregression.py  # Regressão Logística multi-classe
-│   ├── losses.py           #   Funções de custo (Cross-Entropy)
-│   ├── neuralnet.py        #   Classe NeuralNetwork (treino, avaliação)
-│   ├── optimizer.py        #   Otimizadores (SGD, Adam)
-│   ├── utils.py            #   Pipeline de features (TF-IDF, K-Fold, etc.)
-│   └── vectorizers.py      #   TF-IDF, StandardScaler, OneHotEncoder
-├── subm1/                  # Submissão 1
-│   ├── subm1-g1-MIA-A.ipynb  # Notebook de submissão — Modelo NumPy
-│   ├── subm1-g1-MIA-A.csv    # Previsões — Modelo NumPy
-│   ├── subm1-g1-MIA-B.ipynb  # Notebook de submissão — Modelo PyTorch
-│   └── subm1-g1-MIA-B.csv    # Previsões — Modelo PyTorch
+├── data/                       # Datasets e geração de dados
+│   ├── archive/                #   Datasets descarregados (HuggingFace, Kaggle)
+│   ├── func/                   #   Scripts de processamento de dados
+│   │   ├── data.py             #     Carregamento e limpeza
+│   │   ├── dataset.py          #     Construção do dataset final
+│   │   ├── extend.py           #     Extensão com dados gerados
+│   │   └── list.py             #     Listagem de recursos
+│   ├── models/                 #   Textos gerados por cada modelo de IA
+│   │   ├── gemini-flash.csv    #     Google Gemini Flash
+│   │   ├── gpt-4o.csv          #     OpenAI GPT-4o
+│   │   ├── llama3.csv          #     Meta Llama 3
+│   │   ├── opus4.6.csv         #     Anthropic Claude Opus
+│   │   └── ...                 #     (+ gemma, haiku, sonnet, etc.)
+│   ├── resources/              #   Ficheiros auxiliares
+│   ├── vectors/                #   Embeddings (GloVe, etc.)
+│   ├── dataset.csv             #   Dataset principal de treino
+│   └── dataset-exemplos.csv    #   Dataset de teste do professor (125 textos)
+├── models/                     # Modelos treinados
+│   ├── numpy.pkl               #   Melhor modelo NumPy (pesos + transformers)
+│   ├── pytorch.pkl             #   Metadados do melhor modelo PyTorch
+│   └── pytorch.pth             #   Pesos do melhor modelo PyTorch
+├── notebooks/                  # Notebooks de análise e treino
+│   ├── NLP.ipynb               #   Exploração e pré-processamento de texto
+│   ├── T1.ipynb                #   Tarefa 1 — Análise do dataset
+│   ├── T2.ipynb                #   Tarefa 2 — Modelos NumPy (DNN + Baseline LR)
+│   ├── T3.ipynb                #   Tarefa 3 — Modelos PyTorch (DNN, LSTM, GRU, GloVe)
+│   └── T3.1.ipynb              #   Tarefa 3.1 — Transformers (BERT, DistilBERT, RoBERTa)
+├── src/                        # Código-fonte dos modelos NumPy
+│   ├── activations.py          #   Funções de ativação (ReLU, Softmax)
+│   ├── layers.py               #   Camadas (Dense, Dropout)
+│   ├── logisticregression.py   #   Regressão Logística multi-classe
+│   ├── losses.py               #   Funções de custo (Cross-Entropy)
+│   ├── neuralnet.py            #   Classe NeuralNetwork (treino, avaliação)
+│   ├── optimizer.py            #   Otimizadores (SGD, Adam)
+│   ├── utils.py                #   Pipeline de features (TF-IDF, K-Fold, etc.)
+│   └── vectorizers.py          #   TF-IDF, StandardScaler, OneHotEncoder
+├── subm1/                      # Submissão 1
+│   ├── subm1-g1-MIA-A.ipynb    #   Notebook — Modelo NumPy
+│   ├── subm1-g1-MIA-A.csv      #   Previsões — Modelo NumPy
+│   ├── subm1-g1-MIA-B.ipynb    #   Notebook — Modelo PyTorch
+│   └── subm1-g1-MIA-B.csv      #   Previsões — Modelo PyTorch
+├── subm2/                      # Submissão 2
+│   └── subm2-g1-MIA.ipynb      #   Notebook — Modelo Transformer
 ├── .gitignore
-├── env.yml                 # Ambiente Conda
+├── env.yml                     # Ambiente Conda
 └── README.md
 ```
 
