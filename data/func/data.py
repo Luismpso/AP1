@@ -14,7 +14,7 @@ from google import genai
 PASTA_FUNC = os.path.dirname(os.path.abspath(__file__))
 PASTA_DATA = os.path.abspath(os.path.join(PASTA_FUNC, '..'))
 PASTA_RESOURCES = os.path.join(PASTA_DATA, 'resources')
-PASTA_MODELS = os.path.join(PASTA_DATA, 'models') # Onde serão guardados os testes
+PASTA_MODELS = os.path.join(PASTA_DATA, 'models') 
 
 # Ficheiros de entrada
 FICHEIRO_HUMAN = os.path.join(PASTA_DATA, 'human.csv')
