@@ -53,10 +53,10 @@ CONTAS_IAEDU = [
 
 # Mapeamento: (provedor, modelo_api, label_csv, nome_ficheiro_csv)
 VERSOES = [
-    ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
+    # ('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'haiku4.5'),
     # ('IAEdu',     'gpt-4o',                    'OpenAI',    'gpt-4o'),
     # ('Ollama',    'gemma3:latest',             'Google',    'gemma3'), 
-    # ('Ollama',    'llama3.2:latest',           'Meta',      'llama3.2'),   
+    ('Ollama',    'llama3.2:latest',           'Meta',      'llama3.2'),   
 ]
 
 # 2. Funções auxiliares para limpeza, contagem e truncamento de texto
@@ -91,7 +91,7 @@ def limpar_texto(texto):
     texto_str = re.sub(r'\{.*?\}', '', texto_str)
     return texto_str.strip()
 
-# 3. Extração de texto histórico da Wikipedia e geração de texto por IA
+# 3. Extração e Geração
 
 def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
     url_api = "https://en.wikipedia.org/w/api.php"
@@ -144,19 +144,27 @@ def gerar_ai(termo, provedor, modelo):
                 headers = {"x-api-key": conta["api_key"]}
                 payload = {"channel_id": (None, conta["channel_id"]), "message": (None, prompt)}
                 resp = requests.post(conta["endpoint"], headers=headers, files=payload, stream=True, timeout=30)
-                # ... (lógica de extração de stream do IAEdu igual à que tinhas) ...
-                # Para brevidade, simplificado:
                 texto = "".join([json.loads(l.decode()).get("content","") for l in resp.iter_lines() if l])
+            elif provedor == "Ollama":
+                resp = ollama.chat(model=modelo, messages=[{"role": "user", "content": prompt}])
+                texto = resp['message']['content']
             
             final = truncar_texto_frases(limpar_texto(texto))
             if contar_palavras(final) >= 80: return final
         except: time.sleep(2)
     return None
 
-# 4. Gestão de CSVs (Leitura e Escrita)
+# 4. Gestão de CSVs 
+
+def obter_caminho_csv(nome_csv):
+    """Devolve o caminho correto: human na raiz da pasta data, IAs na subpasta models."""
+    if nome_csv == 'human':
+        return os.path.join(PASTA_DATA, f"{nome_csv}.csv")
+    else:
+        return os.path.join(PASTA_DATA, 'models', f"{nome_csv}.csv")
 
 def ler_termos_existentes(nome_csv):
-    caminho = os.path.join(PASTA_DATA, f"{nome_csv}.csv")
+    caminho = obter_caminho_csv(nome_csv)
     if os.path.exists(caminho):
         try:
             df = pd.read_csv(caminho, sep=';')
@@ -165,7 +173,7 @@ def ler_termos_existentes(nome_csv):
     return set()
 
 def guardar_linha_csv(nome_csv, linha_dict):
-    caminho = os.path.join(PASTA_DATA, f"{nome_csv}.csv")
+    caminho = obter_caminho_csv(nome_csv)
     df = pd.DataFrame([linha_dict])
     header = not os.path.exists(caminho)
     df.to_csv(caminho, sep=';', index=False, mode='a', header=header, encoding='utf-8')
@@ -173,39 +181,75 @@ def guardar_linha_csv(nome_csv, linha_dict):
 # 5. Fluxo Principal: Expansão do Dataset
 
 def expandir_dataset():
+    print("\n" + "="*50)
+    print("🔍 Verificação do Estado do Dataset")
+    print("="*50)
+    
     if not os.path.exists(FICHEIRO_TERMOS):
         print(f"❌ Lista não encontrada em {FICHEIRO_TERMOS}")
         return
 
     with open(FICHEIRO_TERMOS, 'r', encoding='utf-8') as f:
         todos_termos = [l.strip() for l in f if l.strip()]
+        
+    print(f"📄 Total de termos na lista (list.txt): {len(todos_termos)}")
 
     # FASE 1: Wikipedia (Human)
     usados_human = ler_termos_existentes('human')
+    print(f"📚 Dados base (Human): {len(usados_human)} / {len(todos_termos)} processados.")
+    
     termos_wiki = [t for t in todos_termos if t not in usados_human]
     
     if termos_wiki:
-        print(f"🌐 Wiki: a processar {len(termos_wiki)} termos...")
-        for t in tqdm(termos_wiki):
+        print(f"\n🚀 A iniciar recolha da Wikipedia para {len(termos_wiki)} termos em falta...")
+        barra_wiki = tqdm(termos_wiki)
+        for t in barra_wiki:
+            # Mostra qual o termo da Wiki que está a ser procurado
+            barra_wiki.set_description(f"A processar: {t[:15]}")
+            
             res = obter_wiki_historica(t)
             if res:
                 guardar_linha_csv('human', {'Termo': t, 'Text': res, 'Label': 'Human'})
+                # Mostra as primeiras 50 letras do texto da Wiki
+                barra_wiki.set_postfix_str(f"Preview: {res[:50]}...")
             else:
                 with open(FICHEIRO_FALHAS, "a") as fe: fe.write(t + "\n")
+                # Avisa se o texto for muito curto ou não existir
+                barra_wiki.set_postfix_str("Falhou ou muito curto")
+    else:
+        print("✅ Wikipedia : Já temos todos os textos!")
 
-    # FASE 2: IAs (baseado no que existe em human.csv)
+    # FASE 2: IAs
+    print("\n" + "="*50)
+    print("🤖 Verificação dos Modelos de IA")
+    print("="*50)
+    
     termos_base = ler_termos_existentes('human')
+
+    if len(termos_base) == 0:
+        print("⚠️ Não há termos base (human.csv) para as IAs usarem como referência. A abortar Fase 2.")
+        return
 
     for prov, mod, lab, nome_f in VERSOES:
         ja_feitos = ler_termos_existentes(nome_f)
         faltam = [t for t in termos_base if t not in ja_feitos]
         
+        print(f"📊 {lab} ({nome_f}.csv): {len(ja_feitos)} / {len(termos_base)} concluídos.")
+        
         if faltam:
-            print(f"🤖 {lab}: a gerar {len(faltam)} textos...")
-            for t in tqdm(faltam):
+            print(f"   ▶ A gerar {len(faltam)} textos em falta para o modelo {lab} ({mod})...")
+            barra_progresso = tqdm(faltam)
+            for t in barra_progresso:
+                # Mostra o termo que está a processar neste momento
+                barra_progresso.set_description(f"A processar: {t[:15]}") 
+                
                 txt = gerar_ai(t, prov, mod)
                 if txt:
                     guardar_linha_csv(nome_f, {'Termo': t, 'Text': txt, 'Label': lab})
+                    # Mostra um excerto do texto gerado à frente da barra
+                    barra_progresso.set_postfix_str(f"Preview: {txt[:50]}...")
+        else:
+            print(f"   ✅ {lab}: Dataset completo para os termos base disponíveis!")
 
 if __name__ == "__main__":
     expandir_dataset()
