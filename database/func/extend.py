@@ -1,24 +1,3 @@
-"""
-extend.py — Expansão do dataset com textos da Wikipedia (Human) e modelos de IA.
-
-Fase 1: Recolhe textos da Wikipedia (revisões pré-2021) para cada termo da lista
-Fase 2: Gera textos com cada modelo de IA para os mesmos termos
-
-Uso:
-    python extend.py
-
-Estrutura:
-    data/
-    ├── func/extend.py          (este ficheiro)
-    ├── resources/list.txt      (lista de termos científicos)
-    ├── resources/fail.txt      (termos que falharam)
-    ├── human.csv               (textos da Wikipedia)
-    └── models/                 (textos gerados por cada IA)
-        ├── gemini-flash.csv
-        ├── gpt-4o.csv
-        └── ...
-"""
-
 import os
 import time
 import re
@@ -32,10 +11,7 @@ import ollama
 import anthropic
 from tqdm import tqdm
 
-
-# ══════════════════════════════════════
 # 1. Configurações de caminhos e chaves
-# ══════════════════════════════════════
 
 PASTA_FUNC = os.path.dirname(os.path.abspath(__file__))
 PASTA_DATA = os.path.abspath(os.path.join(PASTA_FUNC, '..'))
@@ -84,10 +60,7 @@ VERSOES = [
     ('Ollama',    'llama3.2:latest',           'Meta',      'llama3.2'),
 ]
 
-
-# ══════════════════════════════════════
 # 2. Funções auxiliares de texto
-# ══════════════════════════════════════
 
 def contar_palavras(texto):
     if not texto: return 0
@@ -123,10 +96,7 @@ def limpar_texto(texto):
     texto_str = re.sub(r'\{.*?\}', '', texto_str)
     return texto_str.strip()
 
-
-# ══════════════════════════════════════
 # 3. Extratores e geradores de texto
-# ══════════════════════════════════════
 
 def obter_wiki_historica(termo, data_limite="2021-01-01T00:00:00Z"):
     """Extrai texto da Wikipedia de uma revisão anterior a data_limite."""
@@ -252,10 +222,7 @@ def gerar_ai(termo, provedor, modelo):
 
     return melhor_texto if melhor_texto else None
 
-
-# ══════════════════════════════════════
 # 4. Gestão de CSVs
-# ══════════════════════════════════════
 
 def obter_caminho_csv(nome_csv):
     """
@@ -296,10 +263,7 @@ def acrescentar_ao_csv(nome_csv, novos_dados):
     df_final.to_csv(caminho, sep=';', index=False, encoding='utf-8')
     return len(df_final)
 
-
-# ══════════════════════════════════════
 # 5. Fluxo principal
-# ══════════════════════════════════════
 
 def expandir_dataset():
     # Carregar termos da lista
@@ -391,7 +355,7 @@ def expandir_dataset():
         else:
             print(f"⚠️ 0 textos gerados para {nome_csv}")
 
-    # ── RESUMO FINAL ──
+    # RESUMO FINAL
     print(f"\n{'='*60}")
     print("📊 RESUMO FINAL")
     print(f"{'='*60}")

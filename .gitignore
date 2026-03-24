@@ -4,7 +4,7 @@
 *.7z
 
 # Ignorar a pasta de vetores (embeddings)
-data/vectors/
+database/vectors/
 
 # Ignorar checkpoints de modelos e pastas de ambiente
 .venv/
