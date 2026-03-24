@@ -29,7 +29,7 @@ Os dados foram compilados a partir de fontes como:
 
 ```
 AP/
-├── data/                          # Datasets e geração de dados
+├── database/                          # Datasets e geração de dados
 │   ├── archive/                   #   Datasets descarregados (HuggingFace, Kaggle)
 │   ├── func/                      #   Scripts de processamento de dados
 │   │   ├── build_test.py          #     Construção do dataset de teste combinado
