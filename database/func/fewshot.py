@@ -425,7 +425,7 @@ def expandir_fewshot():
 
         pbar.close()
         total_final = contar_linhas_csv(nome_csv)
-        print(f"💾 {nome_csv}.csv → {total_final} total (+{gerados} novos, {falhas} falhas)")
+        print(f"💾 {nome_csv}.csv → {total_final} total (+{gerados} novos)")
 
     # Resumo
     print(f"\n{'=' * 60}")
