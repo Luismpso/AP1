@@ -1,13 +1,3 @@
-"""
-extend_fewshot.py — Gera textos com few-shot examples do professor.
-
-Usa textos revelados (dataset-subm1-labels.csv) como exemplos no prompt
-para que os modelos gerem textos com o mesmo estilo do professor.
-
-Uso:
-    python extend_fewshot.py
-"""
-
 import os
 import time
 import re
@@ -31,7 +21,7 @@ PASTA_RESOURCES = os.path.join(PASTA_DATA, 'resources')
 FICHEIRO_TERMOS = os.path.join(PASTA_RESOURCES, 'list.txt')
 FICHEIRO_LABELS = os.path.join(PASTA_DATA, 'dataset-subm1-labels.csv')
 
-CHAVE_ANTHROPIC = os.environ.get("ANTHROPIC_API_KEY", "")
+CHAVE_ANTHROPIC = ""
 
 CONTAS_IAEDU = [
     {
@@ -66,15 +56,15 @@ _conta_idx = 0
 # Modelos a gerar com few-shot
 VERSOES_FEWSHOT = [
     ('IAEdu',     'gpt-4o',                    'OpenAI',    'openai-fewshot'),
-    #('Ollama',    'llama3.2:latest',           'Meta',      'meta-fewshot'),
+    ('Ollama',    'llama3.2:latest',           'Meta',      'meta-fewshot'),
     #('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'anthropic-fewshot'),
-    #('Ollama',    'gemma3:latest',             'Google',    'google-fewshot'),
+    ('Ollama',    'gemma3:latest',             'Google',    'google-fewshot'),
 ]
 
-N_EXEMPLOS_FEWSHOT = 3  # Exemplos do professor no prompt
+N_EXEMPLOS_FEWSHOT = 5  # Exemplos do professor no prompt
 N_TEXTOS_ALVO = 500     # Quantos textos TOTAL no CSV (não novos)
-PAUSA_IAEDU = 5        # Segundos entre pedidos à IAEdu (evitar rate limit)
-PAUSA_RATE_LIMIT = 15   # Segundos quando apanha 429
+PAUSA_IAEDU = 10        # Segundos entre pedidos à IAEdu (evitar rate limit)
+PAUSA_RATE_LIMIT = 10   # Segundos quando apanha 429
 
 # 2. Funções auxiliares de texto
 
