@@ -58,13 +58,13 @@ VERSOES_FEWSHOT = [
     ('IAEdu',     'gpt-4o',                    'OpenAI',    'openai-fewshot'),
     ('Ollama',    'llama3.2:latest',           'Meta',      'meta-fewshot'),
     #('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'anthropic-fewshot'),
-    ('Ollama',    'gemma3:latest',             'Google',    'google-fewshot'),
+    #('Ollama',    'gemma3:latest',             'Google',    'google-fewshot'),
 ]
 
 N_EXEMPLOS_FEWSHOT = 5  # Exemplos do professor no prompt
-N_TEXTOS_ALVO = 500     # Quantos textos TOTAL no CSV (não novos)
-PAUSA_IAEDU = 10        # Segundos entre pedidos à IAEdu (evitar rate limit)
-PAUSA_RATE_LIMIT = 10   # Segundos quando apanha 429
+N_TEXTOS_ALVO = 24567     # Quantos textos TOTAL no CSV (não novos)
+PAUSA_IAEDU = 0        # Segundos entre pedidos à IAEdu (evitar rate limit)
+PAUSA_RATE_LIMIT = 10   # Pausa maior se todas as contas IAEdu estiverem em rate limit
 
 # 2. Funções auxiliares de texto
 
