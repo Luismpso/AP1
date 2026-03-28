@@ -4,6 +4,8 @@ import re
 import random
 import json
 import uuid
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
 import requests
@@ -47,24 +49,35 @@ CONTAS_IAEDU = [
         "api_key": "sk-usr-4wm81k1mxprmejf3ywwykcq2k9667xpnsbv",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmz16ptfigwjhv01dckivs9u"
+    },
+    {
+        "nome": "Conta 5",
+        "api_key": "sk-usr-1b6pcydmtbqkfne5b344sahba5ca4h17xgq",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmnab9vpmhd5khv014ztcp61j"
     }
 ]
 
-# Contador global para rotação sequencial de contas
-_conta_idx = 0
+NUM_THREADS = 2  # Contas são distribuídas automaticamente pelas threads
 
 # Modelos a gerar com few-shot
 VERSOES_FEWSHOT = [
     ('IAEdu',     'gpt-4o',                    'OpenAI',    'openai-fewshot'),
-    ('Ollama',    'llama3.2:latest',           'Meta',      'meta-fewshot'),
+    #('Ollama',    'llama3.2:latest',           'Meta',      'meta-fewshot'),
     #('Anthropic', 'claude-haiku-4-5-20251001', 'Anthropic', 'anthropic-fewshot'),
     #('Ollama',    'gemma3:latest',             'Google',    'google-fewshot'),
 ]
 
-N_EXEMPLOS_FEWSHOT = 5  # Exemplos do professor no prompt
-N_TEXTOS_ALVO = 24567     # Quantos textos TOTAL no CSV (não novos)
-PAUSA_IAEDU = 0        # Segundos entre pedidos à IAEdu (evitar rate limit)
-PAUSA_RATE_LIMIT = 10   # Pausa maior se todas as contas IAEdu estiverem em rate limit
+N_EXEMPLOS_FEWSHOT = 5
+N_TEXTOS_ALVO = 24567
+PAUSA_IAEDU = 0
+PAUSA_RATE_LIMIT = 10  # Pausa se a conta dedicada tiver rate limit
+
+# Lock para escrita thread-safe no CSV
+_csv_lock = threading.Lock()
+
+# Lock para o tqdm (evitar output misturado)
+_print_lock = threading.Lock()
 
 # 2. Funções auxiliares de texto
 
@@ -91,7 +104,6 @@ def truncar_texto_frases(texto):
 def limpar_texto(texto):
     texto_str = str(texto).replace('\n', ' ').replace('\r', '').strip()
     texto_str = texto_str.replace('ⓘ', '')
-    # Remover UUIDs que possam ter vazado da API
     texto_str = re.sub(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', '', texto_str, flags=re.IGNORECASE)
     texto_str = re.sub(r'\[.*?\]', '', texto_str)
     texto_str = re.sub(r'\(.*?\)', '', texto_str)
@@ -141,19 +153,10 @@ Rules:
 
     return prompt
 
-# 5. Geração — provedor IAEdu (GPT-4o)
+# 5. Geração — chamada IAEdu com conta FIXA (sem rotação)
 
-def _proxima_conta_iaedu():
-    """Rotação sequencial (não aleatória) das contas IAEdu."""
-    global _conta_idx
-    conta = CONTAS_IAEDU[_conta_idx % len(CONTAS_IAEDU)]
-    _conta_idx += 1
-    return conta
-
-
-def _chamar_iaedu(prompt):
-    """Faz um pedido à API IAEdu com handling robusto de erros."""
-    conta = _proxima_conta_iaedu()
+def _chamar_iaedu(prompt, conta):
+    """Faz um pedido à API IAEdu com uma conta específica."""
     headers = {"x-api-key": conta["api_key"]}
 
     novo_thread_id = str(uuid.uuid4())
@@ -176,8 +179,6 @@ def _chamar_iaedu(prompt):
 
     texto_parcial = []
     hit_rate_limit = False
-
-    # Padrão UUID para filtrar lixo
     uuid_pattern = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.IGNORECASE)
 
     for l in resp.iter_lines():
@@ -190,7 +191,6 @@ def _chamar_iaedu(prompt):
 
         tipo = linha_json.get("type", "")
 
-        # Ignorar mensagens de controlo
         if tipo in ("start", "end", "close"):
             continue
 
@@ -201,11 +201,9 @@ def _chamar_iaedu(prompt):
                 break
             return None, erro_msg
 
-        # Só capturar conteúdo de texto real
         if "content" in linha_json and tipo not in ("start", "end", "error"):
             conteudo = linha_json["content"]
             if isinstance(conteudo, str):
-                # Filtrar UUIDs, "Processing", e outros artefactos
                 if uuid_pattern.search(conteudo):
                     continue
                 if conteudo.strip().lower() in ("processing", ""):
@@ -220,10 +218,13 @@ def _chamar_iaedu(prompt):
     texto = "".join(texto_parcial)
     return texto if texto.strip() else None, None
 
-# 6. Geração — função principal
+# 6. Geração — função principal (recebe pool de contas da thread)
 
-def gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe):
-    """Gera texto com few-shot examples do professor."""
+def gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe, contas_pool=None, pool_idx=None):
+    """Gera texto com few-shot examples do professor.
+    contas_pool: lista de contas IAEdu dedicadas a esta thread.
+    pool_idx: lista com [int] para rotação local (mutável para manter estado).
+    """
     prompt = build_fewshot_prompt(termo, provedor, exemplos_classe)
     melhor_texto = ""
     max_palavras = 0
@@ -241,20 +242,24 @@ def gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe):
                 texto = resposta.content[0].text
 
             elif provedor == "IAEdu":
-                # Tentar TODAS as contas antes de pausar
+                # Tentar todas as contas do pool antes de pausar
                 texto_iaedu = None
                 contas_com_rate_limit = 0
 
-                for _ in range(len(CONTAS_IAEDU)):
-                    resultado, erro = _chamar_iaedu(prompt)
+                for _ in range(len(contas_pool)):
+                    conta = contas_pool[pool_idx[0] % len(contas_pool)]
+                    pool_idx[0] += 1
+
+                    resultado, erro = _chamar_iaedu(prompt, conta)
 
                     if erro == "RATE_LIMIT":
                         contas_com_rate_limit += 1
-                        nome_conta = CONTAS_IAEDU[(_conta_idx-1) % len(CONTAS_IAEDU)]['nome']
-                        tqdm.write(f"  ⏳ {nome_conta}: rate limit, a tentar próxima conta...")
-                        continue  # Tentar próxima conta imediatamente
+                        with _print_lock:
+                            tqdm.write(f"  ⏳ {conta['nome']}: rate limit, a tentar próxima...")
+                        continue
                     elif erro:
-                        tqdm.write(f"  🛑 IAEdu erro: {erro}")
+                        with _print_lock:
+                            tqdm.write(f"  🛑 {conta['nome']} erro: {erro}")
                         break
                     elif resultado:
                         texto_iaedu = resultado
@@ -262,12 +267,13 @@ def gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe):
 
                 if texto_iaedu:
                     texto = texto_iaedu
-                    time.sleep(PAUSA_IAEDU)  # Pausa SÓ após sucesso
-                elif contas_com_rate_limit >= len(CONTAS_IAEDU):
-                    # TODAS as contas com rate limit — agora sim, pausar
-                    tqdm.write(f"  ⏳ Todas as {len(CONTAS_IAEDU)} contas com rate limit. Pausa {PAUSA_RATE_LIMIT}s...")
+                    time.sleep(PAUSA_IAEDU)
+                elif contas_com_rate_limit >= len(contas_pool):
+                    nomes = ", ".join(c['nome'] for c in contas_pool)
+                    with _print_lock:
+                        tqdm.write(f"  ⏳ Pool [{nomes}] toda em rate limit. Pausa {PAUSA_RATE_LIMIT}s...")
                     time.sleep(PAUSA_RATE_LIMIT)
-                    continue  # Retry este termo
+                    continue
                 else:
                     continue
 
@@ -289,12 +295,13 @@ def gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe):
                 return texto_final
 
         except Exception as e:
-            tqdm.write(f"  🛑 Erro '{modelo}' em '{termo}': {e}")
+            with _print_lock:
+                tqdm.write(f"  🛑 Erro '{modelo}' em '{termo}': {e}")
             time.sleep(2)
 
     return melhor_texto if melhor_texto else None
 
-# 7. Gestão de CSVs
+# 7. Gestão de CSVs (thread-safe)
 
 def obter_caminho_csv(nome_csv):
     return os.path.join(PASTA_MODELS, f"{nome_csv}.csv")
@@ -323,30 +330,84 @@ def contar_linhas_csv(nome_csv):
 
 
 def guardar_linha_csv(nome_csv, linha_dict):
-    """Guarda uma linha imediatamente no CSV (append)."""
-    caminho = obter_caminho_csv(nome_csv)
-    os.makedirs(os.path.dirname(caminho), exist_ok=True)
-    # Limpar texto de UUIDs e artefactos antes de guardar
-    if 'Text' in linha_dict:
-        uuid_pat = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.IGNORECASE)
-        linha_dict['Text'] = uuid_pat.sub('', linha_dict['Text']).strip()
-        linha_dict['Text'] = linha_dict['Text'].replace(';', ',')  # Evitar corromper CSV
-        linha_dict['Text'] = re.sub(r'\s+', ' ', linha_dict['Text'])
-    df = pd.DataFrame([linha_dict])
-    header = not os.path.exists(caminho)
-    df.to_csv(caminho, sep=';', index=False, mode='a', header=header, encoding='utf-8')
+    """Guarda uma linha imediatamente no CSV (append) — THREAD-SAFE."""
+    with _csv_lock:
+        caminho = obter_caminho_csv(nome_csv)
+        os.makedirs(os.path.dirname(caminho), exist_ok=True)
+        if 'Text' in linha_dict:
+            uuid_pat = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.IGNORECASE)
+            linha_dict['Text'] = uuid_pat.sub('', linha_dict['Text']).strip()
+            linha_dict['Text'] = linha_dict['Text'].replace(';', ',')
+            linha_dict['Text'] = re.sub(r'\s+', ' ', linha_dict['Text'])
+        df = pd.DataFrame([linha_dict])
+        header = not os.path.exists(caminho)
+        df.to_csv(caminho, sep=';', index=False, mode='a', header=header, encoding='utf-8')
 
-# 8. Fluxo principal
+# 8. Worker de uma thread — processa a sua fatia de termos
+
+def worker_thread(thread_id, contas_pool, termos, label, provedor, modelo, nome_csv, exemplos_classe, pbar, contador):
+    """Cada thread processa a sua lista de termos com o seu pool de contas."""
+    gerados = 0
+    falhas = 0
+    pool_idx = [0]  # Mutável para manter estado de rotação entre chamadas
+    nomes_contas = "+".join(c['nome'] for c in contas_pool)
+
+    for termo in termos:
+        # Verificar se já atingimos o alvo global
+        with contador['lock']:
+            if contador['total'] >= contador['alvo']:
+                break
+
+        tentativas = 0
+        while True:
+            tentativas += 1
+            texto = gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe,
+                                     contas_pool=contas_pool, pool_idx=pool_idx)
+
+            if texto:
+                guardar_linha_csv(nome_csv, {'Termo': termo, 'Text': texto, 'Label': label})
+                gerados += 1
+
+                with contador['lock']:
+                    contador['total'] += 1
+                    atual = contador['total']
+
+                pbar.update(1)
+                pbar.set_description(f"{label} ({contador['base'] + atual}/{N_TEXTOS_ALVO})")
+
+                with _print_lock:
+                    tqdm.write(f"  ✅ [T{thread_id}|{nomes_contas}] {termo} ({contar_palavras(texto)}w) [tent. {tentativas}]")
+                    tqdm.write(f"     📝 {texto[:120]}...")
+                break
+            else:
+                falhas += 1
+                with _print_lock:
+                    tqdm.write(f"  ⚠️ [T{thread_id}|{nomes_contas}] {termo} — falhou (tent. {tentativas}), retry...")
+                time.sleep(3)
+
+    return gerados, falhas
+
+# 9. Fluxo principal
 
 def expandir_fewshot():
+    n_contas = len(CONTAS_IAEDU)
     print("=" * 60)
-    print("📝 Geração Few-Shot com Exemplos do Professor")
+    print(f"📝 Geração Few-Shot PARALELA ({NUM_THREADS} threads, {n_contas} contas)")
     print("=" * 60)
+
+    # Distribuir contas pelas threads (round-robin)
+    pools_contas = [[] for _ in range(NUM_THREADS)]
+    for i, conta in enumerate(CONTAS_IAEDU):
+        pools_contas[i % NUM_THREADS].append(conta)
+
+    print("\n🔑 Distribuição de contas:")
+    for t_id in range(NUM_THREADS):
+        nomes = ", ".join(c['nome'] for c in pools_contas[t_id])
+        print(f"    Thread {t_id}: [{nomes}]")
 
     print("\nA carregar exemplos do professor...")
     exemplos = carregar_exemplos_professor()
 
-    # Usar termos do human.csv (mesma ordem)
     caminho_human = os.path.join(PASTA_DATA, 'human.csv')
     if not os.path.exists(caminho_human):
         print(f"❌ human.csv não encontrado: {caminho_human}")
@@ -359,7 +420,7 @@ def expandir_fewshot():
     for idx, (provedor, modelo, label, nome_csv) in enumerate(VERSOES_FEWSHOT, 1):
         print(f"\n{'=' * 60}")
         print(f"[{idx}] {label} ({modelo}) → models/{nome_csv}.csv")
-        print(f"    Few-shot com {N_EXEMPLOS_FEWSHOT} exemplos do professor")
+        print(f"    Few-shot com {N_EXEMPLOS_FEWSHOT} exemplos | {NUM_THREADS} threads paralelas")
         print(f"{'=' * 60}")
 
         if label not in exemplos:
@@ -383,39 +444,70 @@ def expandir_fewshot():
             print(f"⚠️ Sem termos disponíveis para {label}!")
             continue
 
-        print(f"  📊 Atual: {n_atual}/{N_TEXTOS_ALVO} | Faltam: {n_faltam}")
-        print(f"  🆕 A gerar até atingir {N_TEXTOS_ALVO} textos...")
+        # Limitar ao que falta
+        termos_a_processar = termos_disponiveis[:n_faltam]
 
-        gerados = 0
-        falhas_total = 0
+        print(f"  📊 Atual: {n_atual}/{N_TEXTOS_ALVO} | Faltam: {n_faltam}")
+        print(f"  🧵 A dividir {len(termos_a_processar)} termos por {NUM_THREADS} threads...")
+
+        # Dividir termos em fatias para cada thread (round-robin para balanceamento)
+        fatias = [[] for _ in range(NUM_THREADS)]
+        for i, termo in enumerate(termos_a_processar):
+            fatias[i % NUM_THREADS].append(termo)
+
+        for t_id in range(NUM_THREADS):
+            nomes = ", ".join(c['nome'] for c in pools_contas[t_id])
+            print(f"    Thread {t_id}: {len(fatias[t_id])} termos → [{nomes}]")
+
+        # Contador partilhado thread-safe
+        contador = {
+            'total': 0,
+            'alvo': n_faltam,
+            'base': n_atual,
+            'lock': threading.Lock()
+        }
 
         pbar = tqdm(total=n_faltam, desc=f"{label} ({n_atual}/{N_TEXTOS_ALVO})", unit="texto")
 
-        for termo in termos_disponiveis:
-            if gerados >= n_faltam:
-                break
+        # Lançar threads
+        with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+            futures = []
+            for t_id in range(NUM_THREADS):
+                if not fatias[t_id]:
+                    continue
+                f = executor.submit(
+                    worker_thread,
+                    t_id, pools_contas[t_id], fatias[t_id],
+                    label, provedor, modelo, nome_csv,
+                    exemplos_classe, pbar, contador
+                )
+                futures.append(f)
 
-            # Tentar até conseguir (não sai do termo sem sucesso)
-            tentativas = 0
-            while True:
-                tentativas += 1
-                texto = gerar_ai_fewshot(termo, provedor, modelo, exemplos_classe)
-                if texto:
-                    guardar_linha_csv(nome_csv, {'Termo': termo, 'Text': texto, 'Label': label})
-                    gerados += 1
-                    pbar.update(1)
-                    pbar.set_description(f"{label} ({n_atual + gerados}/{N_TEXTOS_ALVO})")
-                    tqdm.write(f"  ✅ [{label}] {termo} ({contar_palavras(texto)}w) [tentativa {tentativas}]")
-                    tqdm.write(f"     📝 {texto[:120]}...")
-                    break
-                else:
-                    falhas_total += 1
-                    tqdm.write(f"  ⚠️ [{label}] {termo} — falhou (tentativa {tentativas}), a tentar novamente...")
-                    time.sleep(3)  # Pequena pausa antes de re-tentar
+            # Esperar por todas as threads
+            total_gerados = 0
+            total_falhas = 0
+            for f in as_completed(futures):
+                try:
+                    g, fl = f.result()
+                    total_gerados += g
+                    total_falhas += fl
+                except Exception as e:
+                    print(f"  🛑 Thread falhou: {e}")
 
         pbar.close()
+
+        # Reordenar CSV pela ordem do human.csv
+        caminho_csv = obter_caminho_csv(nome_csv)
+        if os.path.exists(caminho_csv):
+            df_resultado = pd.read_csv(caminho_csv, sep=';')
+            ordem_termos = {termo: i for i, termo in enumerate(todos_termos)}
+            df_resultado['_ordem'] = df_resultado['Termo'].map(ordem_termos)
+            df_resultado = df_resultado.sort_values('_ordem').drop(columns=['_ordem']).reset_index(drop=True)
+            df_resultado.to_csv(caminho_csv, sep=';', index=False, encoding='utf-8')
+            print(f"  🔄 CSV reordenado pela ordem do human.csv")
+
         total_final = contar_linhas_csv(nome_csv)
-        print(f"💾 {nome_csv}.csv → {total_final} total (+{gerados} novos)")
+        print(f"💾 {nome_csv}.csv → {total_final} total (+{total_gerados} novos, {total_falhas} falhas)")
 
     # Resumo
     print(f"\n{'=' * 60}")
