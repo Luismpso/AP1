@@ -55,10 +55,34 @@ CONTAS_IAEDU = [
         "api_key": "sk-usr-1b6pcydmtbqkfne5b344sahba5ca4h17xgq",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmnab9vpmhd5khv014ztcp61j"
+    },
+    {
+        "nome": "Conta 6",
+        "api_key": "sk-usr-b93ao218mgnx6pym456kq2ojesufaszqqfg",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmnal2fmjiapfhv01m96clfs7"
+    },
+    {
+        "nome": "Conta 7",
+        "api_key": "sk-usr-w09rexm3vmkw1ux3jlc5cbm08jsvytzcauq",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmnal03vmiag5hv011qk74ru0"
+    },
+    {
+        "nome": "Conta 8",
+        "api_key": "sk-usr-0z13h7zmriujl5grvgysat2leu3mukztmhyc",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmnape7viiryjhv01pqa2utns"
+    },
+    {
+        "nome": "Conta 9",
+        "api_key": "sk-usr-y0n84csbfxsw2jfrzvpjriwcel9s87x5l8m",
+        "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
+        "channel_id": "cmnasvpr2j8fjhv019jusn58l"
     }
 ]
 
-NUM_THREADS = 2  # Contas são distribuídas automaticamente pelas threads
+NUM_THREADS = 3  # Contas são distribuídas automaticamente pelas threads
 
 # Modelos a gerar com few-shot
 VERSOES_FEWSHOT = [
@@ -70,8 +94,8 @@ VERSOES_FEWSHOT = [
 
 N_EXEMPLOS_FEWSHOT = 5
 N_TEXTOS_ALVO = 24567
-PAUSA_IAEDU = 0
-PAUSA_RATE_LIMIT = 10  # Pausa se a conta dedicada tiver rate limit
+PAUSA_IAEDU = 1
+PAUSA_RATE_LIMIT = 10
 
 # Lock para escrita thread-safe no CSV
 _csv_lock = threading.Lock()

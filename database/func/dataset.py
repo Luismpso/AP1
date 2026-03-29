@@ -7,10 +7,10 @@ def juntar_baralhar_csvs():
     PASTA_DATA = os.path.abspath(os.path.join(PASTA_FUNC, '..'))
     # 1. Nomes dos ficheiros CSV que queres juntar
     ficheiros_para_juntar = [
-        os.path.join(PASTA_DATA, "google.csv"),
-        os.path.join(PASTA_DATA, "openai.csv"),
+        os.path.join(PASTA_DATA, "google-fewshot.csv"),
+        os.path.join(PASTA_DATA, "openai-fewshot.csv"),
         os.path.join(PASTA_DATA, "anthropic.csv"),
-        os.path.join(PASTA_DATA, "meta.csv"),
+        os.path.join(PASTA_DATA, "meta-fewshot.csv"),
         os.path.join(PASTA_DATA, "human.csv")
     ]
 
