@@ -1,12 +1,15 @@
-# Ignorar ficheiros compactados e pesados
+# Ambiente e cache
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+
+# Ficheiros compactados e pesados
 *.zip
 *.rar
 *.7z
 
-# Ignorar a pasta de vetores (embeddings)
+# Embeddings (pesados)
 database/vectors/
 
-# Ignorar checkpoints de modelos e pastas de ambiente
-.venv/
-__pycache__/
-.ipynb_checkpoints/
+# Backups de notebooks
+notebooks/backup/
