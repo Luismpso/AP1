@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import argparse
 
@@ -37,6 +38,43 @@ def build_test_dataset(csv_paths, output_path=None):
 
     return df_test
 
+def adjust_human_ratio(test_csv, output_path=None, max_human_pct=0.29, seed=42):
+    """
+    Reduz os textos Human no dataset de teste para < 30%.
+    As restantes classes ficam intactas.
+    """
+    df = pd.read_csv(test_csv, sep=';')
+    df.columns = df.columns.str.strip().str.lower()
+    if 'labels' in df.columns:
+        df.rename(columns={'labels': 'label'}, inplace=True)
+    df.columns = [c.title() for c in df.columns]
+
+    humanos = df[df['Label'] == 'Human']
+    outros = df[df['Label'] != 'Human']
+
+    # n_human / (n_human + n_outros) <= max_human_pct
+    # n_human <= max_human_pct * (n_human + n_outros)
+    # n_human <= max_human_pct * n_outros / (1 - max_human_pct)
+    n_human = int(max_human_pct * len(outros) / (1 - max_human_pct))
+    n_human = min(n_human, len(humanos))
+
+    print(f'  Human antes: {len(humanos)}  ({len(humanos)/len(df)*100:.1f}%)')
+    print(f'  Human depois: {n_human}  ({n_human/(n_human+len(outros))*100:.1f}%)')
+
+    humanos = humanos.sample(n=n_human, random_state=seed)
+    df_out = pd.concat([humanos, outros], ignore_index=True)
+    df_out = df_out.sample(frac=1, random_state=seed).reset_index(drop=True)
+
+    print(f'  Total: {len(df_out)} textos')
+    print(df_out['Label'].value_counts().to_string())
+
+    if output_path:
+        os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+        df_out.to_csv(output_path, sep=';', index=False, encoding='utf-8')
+        print(f'  ✅ Guardado em {output_path}')
+
+    return df_out
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Constrói dataset de teste combinado')
@@ -48,3 +86,5 @@ if __name__ == '__main__':
 
     print('A construir dataset de teste...')
     build_test_dataset([args.exemplos, args.subm1, args.subm2], args.output)
+    print('\nA ajustar proporção de Human...')
+    adjust_human_ratio(args.output, args.output)
