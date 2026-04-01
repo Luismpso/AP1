@@ -75,17 +75,15 @@ AP/
 │   ├── subm1-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch
 │   └── subm1-g1-MIA-B.csv            #   Previsões — Modelo PyTorch
 ├── Subm2/                             # Submissão 2
-│   ├── subm2-g1-MIA-A.ipynb           #   Notebook — Modelo Transformer
-│   ├── subm2-g1-MIA-A.csv            #   Previsões — Modelo Transformer
-│   ├── subm2-g1-MIA-B.ipynb           #   Notebook — Modelo alternativo
-│   └── subm2-g1-MIA-B.csv            #   Previsões — Modelo alternativo
+│   ├── subm2-g1-MIA-A.ipynb           #   Notebook — LLM Claude Opus 4.6 Few-shot N = 30
+│   ├── subm2-g1-MIA-A.csv            #   Previsões — LLM Claude Opus 4.6 Few-shot N = 30
+│   ├── subm2-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch
+│   └── subm2-g1-MIA-B.csv            #   Previsões — Modelo PyTorch
 ├── Subm3/                             # Submissão 3
-│   ├── subm3-g1-MIA-A.ipynb           #   Notebook — Ensemble (weighted voting, 3 LLMs)
-│   ├── subm3-g1-MIA-A.csv            #   Previsões — Ensemble
-│   ├── subm3-g1-MIA-B.ipynb           #   Notebook — Melhor LLM solo
-│   ├── subm3-g1-MIA-B.csv            #   Previsões — Melhor LLM solo
-│   ├── ensemble-config.json           #   Pesos e configuração do ensemble
-│   └── support-set.csv               #   Exemplos few-shot (50 textos)
+│   ├── subm3-g1-MIA-A.ipynb           #   Notebook — LLM Claude Opus 4.6 Few-shot N = 40
+│   ├── subm3-g1-MIA-A.csv            #   Previsões — LLM Claude Opus 4.6 Few-shot N = 40
+│   ├── subm3-g1-MIA-B.ipynb           #   Notebook — LLM Gemini 3.1 Pro Few-shot N = 20
+│   └── subm3-g1-MIA-B.csv            #   Previsões — LLM Gemini 3.1 Pro Few-shot N = 20
 ├── .gitignore
 ├── env.yml                            # Ambiente Conda
 └── README.md
