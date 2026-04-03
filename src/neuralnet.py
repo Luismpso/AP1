@@ -5,7 +5,7 @@ class NeuralNetwork:
     def __init__(self, loss_func):
         self.layers = []
         self.loss_func = loss_func
-        self.history = {'loss': [], 'val_loss': []}
+        self.history = {'loss': [], 'val_loss': [], 'acc': [], 'val_acc': []}
 
     def add(self, layer):
         """Adiciona uma nova camada a rede."""
@@ -84,13 +84,17 @@ class NeuralNetwork:
             # Loss de treino
             y_pred_full = self.forward_propagation(X)
             epoch_loss = self.loss_func.loss(Y, y_pred_full)
+            train_acc = self._compute_accuracy(Y, y_pred_full)
             self.history['loss'].append(epoch_loss)
+            self.history['acc'].append(train_acc)
 
             # Loss de validacao
             if X_val is not None and Y_val is not None:
                 y_pred_val = self.forward_propagation(X_val)
                 val_loss = self.loss_func.loss(Y_val, y_pred_val)
+                val_acc = self._compute_accuracy(Y_val, y_pred_val)
                 self.history['val_loss'].append(val_loss)
+                self.history['val_acc'].append(val_acc)
 
                 # Early Stopping
                 if use_early_stopping:
@@ -102,12 +106,10 @@ class NeuralNetwork:
                         patience_counter += 1
 
                 if verbose and (epoch % 10 == 0 or epoch == epochs - 1):
-                    train_acc = self._compute_accuracy(Y, y_pred_full)
-                    val_acc = self._compute_accuracy(Y_val, y_pred_val)
                     print(f"Epoch {epoch + 1}/{epochs} | Loss: {epoch_loss:.4f} | Val Loss: {val_loss:.4f} | Train Acc: {train_acc:.2%} | Val Acc: {val_acc:.2%}")
             else:
                 if verbose and (epoch % 10 == 0 or epoch == epochs - 1):
-                    print(f"Epoch {epoch + 1}/{epochs} | Loss: {epoch_loss:.4f}")
+                    print(f"Epoch {epoch + 1}/{epochs} | Loss: {epoch_loss:.4f} | Acc: {train_acc:.2%}")
 
             # Verificar early stopping
             if use_early_stopping and patience_counter >= patience:

@@ -10,7 +10,7 @@ def build_test_dataset(csv_paths, output_path=None):
     """
     dfs = []
     for path in csv_paths:
-        df = pd.read_csv(path, sep=';')
+        df = pd.read_csv(path, sep=';', encoding='utf-8-sig')
         df.columns = df.columns.str.strip().str.lower()
         if 'labels' in df.columns:
             df.rename(columns={'labels': 'label'}, inplace=True)
@@ -43,7 +43,7 @@ def adjust_human_ratio(test_csv, output_path=None, max_human_pct=0.29, seed=42):
     Reduz os textos Human no dataset de teste para < 30%.
     As restantes classes ficam intactas.
     """
-    df = pd.read_csv(test_csv, sep=';')
+    df = pd.read_csv(test_csv, sep=';', encoding='utf-8-sig')
     df.columns = df.columns.str.strip().str.lower()
     if 'labels' in df.columns:
         df.rename(columns={'labels': 'label'}, inplace=True)
@@ -81,10 +81,9 @@ if __name__ == '__main__':
     parser.add_argument('--exemplos', default='dataset-samples.csv')
     parser.add_argument('--subm1', default='dataset-subm1-labels.csv')
     parser.add_argument('--subm2', default='dataset-subm2-labels.csv')
+    parser.add_argument('--subm3', default='dataset-subm3-labels.csv')
     parser.add_argument('--output', default='dataset-test.csv')
     args = parser.parse_args()
 
     print('A construir dataset de teste...')
-    build_test_dataset([args.exemplos, args.subm1, args.subm2], args.output)
-    print('\nA ajustar proporção de Human...')
-    adjust_human_ratio(args.output, args.output)
+    build_test_dataset([args.exemplos, args.subm1, args.subm2, args.subm3], args.output)
