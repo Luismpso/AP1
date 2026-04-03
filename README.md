@@ -93,14 +93,6 @@ AP/
 └── README.md
 ```
 
-## 🏆 Rankings
-
-| Submissão | Modelo A | Modelo B | Acc. A | Acc. B | Ranking |
-|-----------|----------|----------|--------|--------|---------|
-| 1 | DNN NumPy | DNN PyTorch | 71.33% | 68.67% | **1.º / 25** |
-| 2 | Claude Opus (N=30) | DNN PyTorch | 91.33% | 72.67% | **1.º / 24** |
-| 3 | Claude Opus (N=40) | Gemini 3.1 Pro (N=20) | 88.00% | 83.33% | **1.º / 23** |
-
 ## 🗣️ Apresentação
 
 [![Watch Video](https://img.shields.io/badge/Ver_Apresentação-blue?style=for-the-badge&logo=dropbox)](https://www.dropbox.com/scl/fi/p6rimm296856hgoxj4ju8/Apresentacao_AP.mp4?rlkey=965zuy3p44yqvdjd58o1ftyz4&st=2bnv6me5&dl=0)
