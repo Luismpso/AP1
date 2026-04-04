@@ -25,7 +25,7 @@ Classificação multi-classe de textos curtos (80–120 palavras) em cinco categ
 | Transformers | DistilBERT (Grid Search) | **98.16%** | — |
 | LLM (few-shot) | Claude Opus 4.6 | — | **87.33%** |
 
-> **Insight principal:** Os modelos treinados atingem >95% em validação cruzada mas ~75% no teste externo (mudança de domínio). Os LLMs, sem treino específico, obtêm 87%+ no teste externo — a abordagem mais robusta.
+> **Insight:** Os modelos treinados atingem >94% em validação cruzada mas ~75% no teste externo (mudança de domínio). Os LLMs, sem treino específico, obtêm 87%+ no teste — a abordagem mais robusta.
 
 ---
 
