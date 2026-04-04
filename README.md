@@ -14,10 +14,10 @@ O sistema resolve um problema de classificação multi-classe:
 ## 🛠️ Implementações
 
 * **Modelo de Raiz (NumPy):** Implementação manual de Redes Neuronais Profundas (DNN) e Regressão Logística, sem uso de bibliotecas de DL. Inclui regularização (L2 e Dropout), Early Stopping e otimizador Adam.
-* **Modelos Avançados (PyTorch):** Exploração de arquiteturas como DNNs com BatchNorm e LeakyReLU, Embeddings treinável, RNNs bidirecionais (BiLSTM e BiGRU), e embeddings pré-treinados (GloVe). Inclui Grid Search de hiperparâmetros.
+* **Modelos Avançados (PyTorch):** Exploração de arquiteturas como DNNs com BatchNorm e LeakyReLU, Embeddings treináveis, RNNs bidirecionais (BiLSTM e BiGRU), e embeddings pré-treinados (GloVe). Inclui Grid Search de hiperparâmetros.
 * **Transformers (HuggingFace):** Fine-tuning de modelos pré-treinados (BERT, DistilBERT, RoBERTa) com estratégias de freeze parcial e Grid Search.
-* **Ensemble de LLMs:** Classificação via few-shot prompting com 3 LLMs (Claude Opus, Gemini 2.5 Pro, DeepSeek V3) e agregação por weighted voting. Os pesos são calibrados automaticamente com base na accuracy de validação.
-* **Validação:** Stratified K-Fold (K=5) para comparação robusta dos modelos.
+* **Ensemble de LLMs:** Classificação via few-shot prompting com 3 LLMs (Claude Opus 4.6, Gemini 3.1 Pro, DeepSeek V3) e agregação por weighted voting. Os pesos são calibrados automaticamente com base na accuracy de validação.
+* **Validação:** Stratified K-Fold (K=3) para comparação robusta dos modelos.
 
 ## 📊 Datasets Utilizados
 
@@ -48,11 +48,14 @@ AP/
 │   ├── dataset-subm2.csv              #   Textos da submissão 2 (150, sem labels)
 │   ├── dataset-subm2-labels.csv       #   Labels revelados da submissão 2 (100 textos)
 │   ├── dataset-subm3.csv              #   Textos da submissão 3 (150, sem labels)
-│   └── dataset-test.csv               #   Dataset de teste combinado (225 textos)
+│   ├── dataset-subm3-labels.csv       #   Labels revelados da submissão 3 (150 textos)
+│   └── dataset-test.csv               #   Dataset de teste combinado (475 textos)
 ├── models/                            # Modelos treinados
 │   ├── numpy.pkl                      #   Melhor modelo NumPy (pesos + transformers)
 │   ├── pytorch.pkl                    #   Metadados do melhor modelo PyTorch
-│   └── pytorch.pth                    #   Pesos do melhor modelo PyTorch
+│   ├── pytorch.pth                    #   Pesos do melhor modelo PyTorch
+│   ├── transformer.pkl                #   Metadados do melhor Transformer
+│   └── transformer.pth                #   Pesos do melhor Transformer
 ├── notebooks/                         # Notebooks de análise e treino
 │   ├── Data.ipynb                     #   Exploração e pré-processamento de dados
 │   ├── Numpy.ipynb                    #   Modelos NumPy (DNN + Baseline LR)
@@ -70,22 +73,23 @@ AP/
 │   ├── utils.py                       #   Pipeline de features (TF-IDF, K-Fold, etc.)
 │   └── vectorizers.py                 #   TF-IDF, StandardScaler, OneHotEncoder
 ├── Subm1/                             # Submissão 1
-│   ├── subm1-g1-MIA-A.ipynb           #   Notebook — Modelo NumPy
+│   ├── subm1-g1-MIA-A.ipynb           #   Notebook — Modelo NumPy (DNN)
 │   ├── subm1-g1-MIA-A.csv            #   Previsões — Modelo NumPy
-│   ├── subm1-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch
+│   ├── subm1-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch (DNN)
 │   └── subm1-g1-MIA-B.csv            #   Previsões — Modelo PyTorch
 ├── Subm2/                             # Submissão 2
-│   ├── subm2-g1-MIA-A.ipynb           #   Notebook — LLM Claude Opus 4.6 Few-shot N = 30
-│   ├── subm2-g1-MIA-A.csv            #   Previsões — LLM Claude Opus 4.6 Few-shot N = 30
-│   ├── subm2-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch
+│   ├── subm2-g1-MIA-A.ipynb           #   Notebook — Claude Opus 4.6 Few-shot (N=30)
+│   ├── subm2-g1-MIA-A.csv            #   Previsões — Claude Opus 4.6
+│   ├── subm2-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch (DNNGrid)
 │   └── subm2-g1-MIA-B.csv            #   Previsões — Modelo PyTorch
 ├── Subm3/                             # Submissão 3
-│   ├── subm3-g1-MIA-A.ipynb           #   Notebook — LLM Claude Opus 4.6 Few-shot N = 40
-│   ├── subm3-g1-MIA-A.csv            #   Previsões — LLM Claude Opus 4.6 Few-shot N = 40
-│   ├── subm3-g1-MIA-B.ipynb           #   Notebook — LLM Gemini 3.1 Pro Few-shot N = 20
-│   └── subm3-g1-MIA-B.csv            #   Previsões — LLM Gemini 3.1 Pro Few-shot N = 20
+│   ├── subm3-g1-MIA-A.ipynb           #   Notebook — Claude Opus 4.6 Few-shot (N=40)
+│   ├── subm3-g1-MIA-A.csv            #   Previsões — Claude Opus 4.6
+│   ├── subm3-g1-MIA-B.ipynb           #   Notebook — Gemini 3.1 Pro Few-shot (N=20)
+│   └── subm3-g1-MIA-B.csv            #   Previsões — Gemini 3.1 Pro
 ├── .gitignore
 ├── env.yml                            # Ambiente Conda
+├── presentation.md                    # Link para o vídeo da apresentação
 └── README.md
 ```
 
