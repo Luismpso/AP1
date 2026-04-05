@@ -1,7 +1,6 @@
 # 🔍 Deteção de Texto Gerado por IA
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
-![Grade](https://img.shields.io/badge/Grade-TBD-lightgrey)
 ![Status](https://img.shields.io/badge/Status-Done-success)
 ![Rank](https://img.shields.io/badge/Rank-1º_/_25-gold)
 ![License](https://img.shields.io/badge/License-Academic-lightgrey)
@@ -141,6 +140,7 @@ AP/
 │   ├── rankings.xlsx                  #   Rankings das submissões (todos os grupos)
 │   └── presentation.md                #   Link para vídeo da apresentação
 │
+├── .env.example                       # Template para chaves de API
 ├── .gitignore
 ├── env.yml                            # Ambiente Conda
 └── README.md
@@ -154,6 +154,26 @@ AP/
 
 * **Git** instalado.
 * **Anaconda** ou **Miniconda** instalado.
+* **Chaves de API** (apenas necessário para geração de dados ou inferência via LLMs).
+
+**Configuração das Variáveis de Ambiente (.env)**
+
+Para executar os scripts de geração de dados (`data.py`, `fewshot.py`) ou os notebooks de LLM, é necessário configurar as chaves de API:
+
+1. Na raiz do projeto, copie o ficheiro de exemplo:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Preencha o `.env` com as chaves das APIs que pretende utilizar:
+   ```env
+   OPENAI_API_KEY="sk-..."
+   ANTHROPIC_API_KEY="sk-ant-..."
+   GEMINI_API_KEY="AIza..."
+   DEEPSEEK_API_KEY="sk-..."
+   ```
+
+> ⚠️ O ficheiro `.env` está no `.gitignore` — nunca faça commit das suas chaves.
 
 ### Passos
 
@@ -169,7 +189,13 @@ AP/
    conda activate AP
    ```
 
-3. **Gerar dados (opcional):**
+3. **Configurar chaves de API (opcional):**
+   ```bash
+   cp .env.example .env
+   # Editar .env com as suas chaves
+   ```
+
+4. **Gerar dados (opcional):**
    ```bash
    cd database/func
    python data.py          # Gerar textos via APIs
@@ -177,7 +203,7 @@ AP/
    python dataset.py       # Combinar em dataset.csv
    ```
 
-4. **Treinar modelos:**
+5. **Treinar modelos:**
    ```bash
    cd ../../notebooks
    jupyter notebook Numpy.ipynb       # Tarefa 2
@@ -185,7 +211,7 @@ AP/
    jupyter notebook Tranformers.ipynb # Tarefa 3
    ```
 
-5. **Submissões:**
+6. **Submissões (exemplo):**
    ```bash
    cd ../Subm1
    jupyter notebook subm1-g1-MIA-A.ipynb
