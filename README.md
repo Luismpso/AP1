@@ -1,20 +1,33 @@
-# Deteção de Texto Gerado por IA
+# 🔍 Deteção de Texto Gerado por IA
 
-> **UC Aprendizagem Profunda · Mestrado em Inteligência Artificial · Universidade do Minho · 2025/26**
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Grade](https://img.shields.io/badge/Grade-TBD-lightgrey)
+![Status](https://img.shields.io/badge/Status-Done-success)
+![Rank](https://img.shields.io/badge/Rank-1º_/_25-gold)
+![License](https://img.shields.io/badge/License-Academic-lightgrey)
 
-Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — Human, Anthropic, Google, Meta e OpenAI — usando Deep Learning e LLMs.
+> **Aprendizagem Profunda** | Mestrado em Inteligência Artificial | Universidade do Minho | 2025/26
+
+Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — Human, Anthropic, Google, Meta e OpenAI — usando Deep Learning e LLMs via few-shot prompting.
 
 ---
 
-## Resultados
+## 🏆 Conquistas
+
+* **Ranking:** 1.º lugar nas 3 submissões (entre 23–25 grupos).
+* **Melhor accuracy:** 92.67% (stacking MLP sobre 3 LLMs).
+
+---
+
+## 📊 Resultados
 
 ### Rankings da Competição
 
 | Submissão | Modelo A | Acc. A | Modelo B | Acc. B | Ranking |
 |:---------:|----------|:------:|----------|:------:|:-------:|
-| 1 | DNN NumPy | 71.33% | DNN PyTorch | 68.67% | 1.º / 25 |
-| 2 | Claude Opus (few-shot, N=30) | 91.33% | DNN PyTorch | 72.67% | 1.º / 24 |
-| 3 | Claude Opus (few-shot, N=40) | 88.00% | Gemini 3.1 Pro (few-shot, N=20) | 83.33% | 1.º / 24 |
+| 1 | DNN NumPy | 71.33% | DNN PyTorch | 68.67% | 🥇 1.º / 25 |
+| 2 | Claude Opus (few-shot, N=30) | 91.33% | DNN PyTorch | 72.67% | 🥇 1.º / 24 |
+| 3 | Claude Opus (few-shot, N=40) | 88.00% | Gemini 3.1 Pro (few-shot, N=20) | 83.33% | 🥇 1.º / 24 |
 
 Os rankings completos de todos os grupos encontram-se em [`docs/rankings.xlsx`](docs/rankings.xlsx).
 
@@ -26,25 +39,27 @@ Os rankings completos de todos os grupos encontram-se em [`docs/rankings.xlsx`](
 | PyTorch | BiGRU (h=256) | 94.72% | 76.84%¹ |
 | Transformers | DistilBERT (Grid Search) | 96.15% | 77.26%¹ |
 | LLM (few-shot) | Claude Opus 4.6 | — | 87.33%² |
-| LLM (stacking) | MLP sobre 3 LLMs | — | 92.67%² |
+| LLM (stacking) | MLP sobre 3 LLMs | — | **92.67%²** |
 
-¹ 475 textos teste. ² 150 textos de teste (LOO-CV).
+¹ 475 textos de teste. ² 150 textos de teste (LOO-CV).
 
-Os modelos treinados atingem >95% em validação cruzada mas ~77% no teste externo (mudança de domínio). Um meta-classificador (stacking MLP) sobre 3 LLMs atinge 92.67%, superando tanto modelos treinados como LLMs individuais.
+Os modelos treinados atingem >94% em validação cruzada mas ~77% no teste externo (mudança de domínio). Um meta-classificador (stacking MLP) sobre 3 LLMs atinge 92.67%, superando tanto modelos treinados como LLMs individuais.
+
+> 📄 **Relatório:** [Ver PDF do Relatório](docs/report.pdf)
 
 ---
 
-## Implementações
+## ⚙️ Implementações
 
 ### Tarefa 2 — Modelos From Scratch (NumPy)
 
 Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualquer biblioteca de ML/DL:
 
-- Camadas: Dense (He init, L2), Dropout (inverted), ReLU, Softmax
-- Otimizadores: SGD com Momentum, Adam (com bias correction)
-- Features: TF-IDF (word 1–2 grams + char 2–4 grams) + 13 features estilísticas = 5013 features
-- Treino: Mini-batch, Early Stopping, Stratified K-Fold (K=3) sobre 122k textos
-- Inclui: Bag-of-Words, TF-IDF Vectorizer, StandardScaler, OneHotEncoder — tudo from scratch
+- **Camadas:** Dense (He init, L2), Dropout (inverted), ReLU, Softmax
+- **Otimizadores:** SGD com Momentum, Adam (com bias correction)
+- **Features:** TF-IDF (word 1–2 grams + char 2–4 grams) + 13 features estilísticas = 5013 features
+- **Treino:** Mini-batch, Early Stopping, Stratified K-Fold (K=3) sobre 122k textos
+- **Inclui:** Bag-of-Words, TF-IDF Vectorizer, StandardScaler, OneHotEncoder — tudo from scratch
 
 ### Tarefa 3 — Modelos PyTorch
 
@@ -63,23 +78,23 @@ Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualq
 
 ### LLMs — Few-Shot Prompting
 
-- Modelos: Claude Opus 4.6, Gemini 3.1 Pro, GPT-5.4, DeepSeek V3
-- Ensemble: Weighted majority voting (pesos calibrados por accuracy)
-- Stacking: Meta-classificador MLP (LOO-CV) sobre previsões dos 3 melhores LLMs → 92.67%
+- **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-5.4, DeepSeek V3
+- **Ensemble:** Weighted majority voting (pesos calibrados por accuracy)
+- **Stacking:** Meta-classificador MLP (LOO-CV) sobre previsões dos 3 melhores LLMs → 92.67%
 
 ---
 
-## Construção dos Dados
+## 🗃️ Construção dos Dados
 
-1. Geração própria via APIs de 15 modelos (GPT-3.5/4o/4o-mini/5o-mini, Gemini 2.5 Pro/Flash, Gemma 1/2/3, Opus/Sonnet/Haiku, Llama 3/3.1/3.2)
-2. Textos humanos extraídos da Wikipedia (revisões pré-2021) via API, com limpeza de artefactos
-3. Geração few-shot — textos gerados imitando o estilo dos exemplos do professor, com paralelismo multi-thread
-4. Seleção combinatória — 180 combinações testadas com baseline LR + TF-IDF contra os exemplos do docente
-5. Dataset final: ~122.000 textos equilibrados pelas 5 classes
+1. **Geração própria** via APIs de 15 modelos (GPT-3.5/4o/4o-mini/5o-mini, Gemini 2.5 Pro/Flash, Gemma 1/2/3, Opus/Sonnet/Haiku, Llama 3/3.1/3.2)
+2. **Textos humanos** extraídos da Wikipedia (revisões pré-2021) via API, com limpeza de artefactos
+3. **Geração few-shot** — textos gerados imitando o estilo dos exemplos do professor, com paralelismo multi-thread
+4. **Seleção combinatória** — 180 combinações testadas com baseline LR + TF-IDF contra os exemplos do docente
+5. **Dataset final:** ~122.000 textos equilibrados pelas 5 classes
 
 ---
 
-## Estrutura do Repositório
+## 📂 Estrutura do Repositório
 
 ```
 AP/
@@ -133,39 +148,58 @@ AP/
 
 ---
 
-## Reprodução
+## 🚀 Reprodução
 
-```bash
-# 1. Criar ambiente
-conda env create -f env.yml
-conda activate AP
+### Pré-requisitos
 
-# 2. Gerar dados (opcional)
-cd database/func
-python data.py          # Gerar textos via APIs
-python extend.py        # Expandir dataset
-python dataset.py       # Combinar em dataset.csv
+* **Git** instalado.
+* **Anaconda** ou **Miniconda** instalado.
 
-# 3. Treinar modelos
-cd ../../notebooks
-jupyter notebook Numpy.ipynb       # Tarefa 2
-jupyter notebook Pytorch.ipynb     # Tarefa 3
-jupyter notebook Tranformers.ipynb # Tarefa 3
+### Passos
 
-# 4. Submissões
-cd ../Subm1
-jupyter notebook subm1-g1-MIA-A.ipynb
-```
+1. **Clonar o repositório:**
+   ```bash
+   git clone https://github.com/Luismpso/AP.git
+   cd AP
+   ```
+
+2. **Criar e ativar o ambiente:**
+   ```bash
+   conda env create -f env.yml
+   conda activate AP
+   ```
+
+3. **Gerar dados (opcional):**
+   ```bash
+   cd database/func
+   python data.py          # Gerar textos via APIs
+   python extend.py        # Expandir dataset
+   python dataset.py       # Combinar em dataset.csv
+   ```
+
+4. **Treinar modelos:**
+   ```bash
+   cd ../../notebooks
+   jupyter notebook Numpy.ipynb       # Tarefa 2
+   jupyter notebook Pytorch.ipynb     # Tarefa 3
+   jupyter notebook Tranformers.ipynb # Tarefa 3
+   ```
+
+5. **Submissões:**
+   ```bash
+   cd ../Subm1
+   jupyter notebook subm1-g1-MIA-A.ipynb
+   ```
 
 ---
 
-## Apresentação
+## 🎥 Apresentação
 
 [![Watch Video](https://img.shields.io/badge/Ver_Apresentação-blue?style=for-the-badge&logo=dropbox)](https://www.dropbox.com/scl/fi/p6rimm296856hgoxj4ju8/Apresentacao_AP.mp4?rlkey=965zuy3p44yqvdjd58o1ftyz4&st=2bnv6me5&dl=0)
 
 ---
 
-## Grupo 1 — MIA
+## 👥 Grupo 1 — MIA
 
 | Nome | Nº | Email |
 |------|----|-------|
@@ -173,3 +207,9 @@ jupyter notebook subm1-g1-MIA-A.ipynb
 | Pedro Miguel S. A. Urbano dos Reis | PG59908 | pg59908@alunos.uminho.pt |
 | Guilherme Lobo Pinto | PG60225 | pg60225@alunos.uminho.pt |
 | Pedro Alexandre Silva Gomes | PG60289 | pg60289@alunos.uminho.pt |
+
+---
+
+## 📜 Licença
+
+Este trabalho é de cariz estritamente académico. Universidade do Minho, Escola de Engenharia, Departamento de Informática.
