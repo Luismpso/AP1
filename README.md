@@ -2,7 +2,7 @@
 
 > **UC Aprendizagem Profunda · Mestrado em Inteligência Artificial · Universidade do Minho · 2025/26**
 
-Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic**, **Google**, **Meta** e **OpenAI** — usando Deep Learning e LLMs. O grupo obteve **1.º lugar em todas as 3 submissões**.
+Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic** (Claude), **Google** (Gemini/Gemma), **Meta** (Llama) e **OpenAI** (GPT) — usando Deep Learning e LLMs. O grupo obteve **1.º lugar em todas as 3 submissões**.
 
 ---
 
@@ -22,18 +22,18 @@ Classificação multi-classe de textos curtos (80–120 palavras) em cinco categ
 |-----------|---------------|:---------:|:------------------:|
 | NumPy (from scratch) | DNN 128→64 | 94.49% | 75.37% |
 | PyTorch | BiGRU (h=256) | 94.72% | 76.84% |
-| Transformers | DistilBERT (Grid Search) | **98.16%** | — |
+| Transformers | DistilBERT (Grid Search) | **96.15%** | **77.26%** |
 | LLM (few-shot) | Claude Opus 4.6 | — | **87.33%** |
 
-> **Insight:** Os modelos treinados atingem >94% em validação cruzada mas ~75% no teste externo (mudança de domínio). Os LLMs, sem treino específico, obtêm 87%+ no teste — a abordagem mais robusta.
+> **Insight principal:** Os modelos treinados atingem >95% em validação cruzada mas ~77% no teste externo (mudança de domínio). Os LLMs, sem treino específico, obtêm 87%+ no teste externo — a abordagem mais robusta.
 
 ---
 
 ## 🛠️ Implementações
 
-### Tarefa 2 — Modelos From Scratch
+### Tarefa 2 — Modelos From Scratch (NumPy)
 
-Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualquer biblioteca de Machine Learning:
+Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualquer biblioteca de ML/DL:
 
 - **Camadas:** Dense (He init, L2), Dropout (inverted), ReLU, Softmax
 - **Otimizadores:** SGD com Momentum, Adam (com bias correction)
@@ -53,11 +53,12 @@ Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualq
 **Transformers (HuggingFace):**
 - BERT, DistilBERT, RoBERTa — estratégias frozen vs. partial fine-tuning
 - Grid Search: 27 configs (LR × Dropout × camadas descongeladas)
+- Melhor: DistilBERT (lr=5e-5, drop=0.2, unfreeze=4) → **96.15% CV, 77.26% teste**
 - Mixed precision (FP16), checkpoints por fold
 
 ### LLMs — Few-Shot Prompting
 
-- **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-5.4, DeepSeek V3
+- **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-4o, DeepSeek V3
 - **Ensemble:** Weighted majority voting (pesos calibrados por accuracy)
 - **Conclusão:** Claude solo (87.33%) supera o ensemble (85.33%)
 
@@ -145,7 +146,7 @@ python dataset.py       # Combinar em dataset.csv
 cd ../../notebooks
 jupyter notebook Numpy.ipynb       # Tarefa 2
 jupyter notebook Pytorch.ipynb     # Tarefa 3
-jupyter notebook Tranformers.ipynb # Tarefa 3 (requer GPU)
+jupyter notebook Tranformers.ipynb # Tarefa 3 
 
 # 4. Submissões
 cd ../Subm1
