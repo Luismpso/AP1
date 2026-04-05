@@ -1,107 +1,170 @@
-# 🤖 AI vs Human Text Detection
+# 🤖 Deteção de Texto Gerado por IA
 
-**UC Aprendizagem Profunda | Mestrado em Inteligência Artificial | UMinho**
+> **UC Aprendizagem Profunda · Mestrado em Inteligência Artificial · Universidade do Minho · 2025/26**
 
-Este projeto visa desenvolver modelos de Deep Learning capazes de distinguir entre texto escrito por humanos e texto gerado por diferentes modelos de IA (Google, Anthropic, Meta e OpenAI).
+Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic**, **Google**, **Meta** e **OpenAI** — usando Deep Learning e LLMs. O grupo obteve **1.º lugar em todas as 3 submissões**.
 
-## 🎯 Objetivos e Desafios
+---
 
-O sistema resolve um problema de classificação multi-classe:
+## 📊 Resultados
 
-* **Classes:** Anthropic, Google, Meta, OpenAI e Human.
-* **Restrição Crítica:** Os modelos devem ser otimizados para pequenos textos (80 a 120 palavras) focados em áreas de ciências naturais e tecnologia.
+### 🏆 Rankings da Competição
+
+| Submissão | Modelo A | Acc. A | Modelo B | Acc. B | Ranking |
+|:---------:|----------|:------:|----------|:------:|:-------:|
+| 1 | DNN NumPy | 71.33% | DNN PyTorch | 68.67% | **1.º** / 25 |
+| 2 | Claude Opus (few-shot, N=30) | **91.33%** | DNN PyTorch | 72.67% | **1.º** / 24 |
+| 3 | Claude Opus (few-shot, N=40) | **88.00%** | Gemini Pro (few-shot, N=20) | 83.33% | **1.º** / 24 |
+
+### 🆚 Comparação de Abordagens
+
+| Abordagem | Melhor Modelo | K-Fold CV | Teste (475 textos) |
+|-----------|---------------|:---------:|:------------------:|
+| NumPy (from scratch) | DNN 128→64 | 94.49% | 75.37% |
+| PyTorch | BiGRU (h=256) | 94.72% | 76.84% |
+| Transformers | DistilBERT (Grid Search) | **98.16%** | — |
+| LLM (few-shot) | Claude Opus 4.6 | — | **87.33%** |
+
+> **Insight principal:** Os modelos treinados atingem >95% em validação cruzada mas ~75% no teste externo (mudança de domínio). Os LLMs, sem treino específico, obtêm 87%+ no teste externo — a abordagem mais robusta.
+
+---
 
 ## 🛠️ Implementações
 
-* **Modelo de Raiz (NumPy):** Implementação manual de Redes Neuronais Profundas (DNN) e Regressão Logística, sem uso de bibliotecas de DL. Inclui regularização (L2 e Dropout), Early Stopping e otimizador Adam.
-* **Modelos Avançados (PyTorch):** Exploração de arquiteturas como DNNs com BatchNorm e LeakyReLU, Embeddings treináveis, RNNs bidirecionais (BiLSTM e BiGRU), e embeddings pré-treinados (GloVe). Inclui Grid Search de hiperparâmetros.
-* **Transformers (HuggingFace):** Fine-tuning de modelos pré-treinados (BERT, DistilBERT, RoBERTa) com estratégias de freeze parcial e Grid Search.
-* **Ensemble de LLMs:** Classificação via few-shot prompting com 3 LLMs (Claude Opus 4.6, Gemini 3.1 Pro, DeepSeek V3) e agregação por weighted voting. Os pesos são calibrados automaticamente com base na accuracy de validação.
-* **Validação:** Stratified K-Fold (K=3) para comparação robusta dos modelos.
+### Tarefa 2 — Modelos From Scratch
 
-## 📊 Datasets Utilizados
+Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualquer biblioteca de Machine Learning:
 
-Os dados foram compilados a partir de fontes como:
+- **Camadas:** Dense (He init, L2), Dropout (inverted), ReLU, Softmax
+- **Otimizadores:** SGD com Momentum, Adam (com bias correction)
+- **Features:** TF-IDF (word 1–2 grams + char 2–4 grams) + 13 features estilísticas = 5013 features
+- **Treino:** Mini-batch, Early Stopping, Stratified K-Fold (K=3) sobre 122k textos
+- **Inclui:** Bag-of-Words, TF-IDF Vectorizer, StandardScaler, OneHotEncoder — tudo from scratch
 
-* **HuggingFace:** OpenTuringBench, HC3, ai-text-detection-pile, M4.
-* **Geração própria** via APIs de LLMs (GPT-4o, Gemini, Llama, Claude, etc.) para balanceamento de classes.
+### Tarefa 3 — Modelos PyTorch
+
+**DNNs Tabulares** — 7 variantes (Wide, Narrow, Deep, LeakyReLU, ELU, Simple, VeryDeep) + Grid Search (27 configs)
+
+**Modelos Sequenciais:**
+- Embedding + DNN (128d, 256d) com masked mean pooling
+- BiLSTM e BiGRU (h=128, h=256) bidirecionais, 2 camadas
+- BiLSTM + GloVe (100d, 400k vetores) — frozen e fine-tuned
+
+**Transformers (HuggingFace):**
+- BERT, DistilBERT, RoBERTa — estratégias frozen vs. partial fine-tuning
+- Grid Search: 27 configs (LR × Dropout × camadas descongeladas)
+- Mixed precision (FP16), checkpoints por fold
+
+### LLMs — Few-Shot Prompting
+
+- **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-5.4, DeepSeek V3
+- **Ensemble:** Weighted majority voting (pesos calibrados por accuracy)
+- **Conclusão:** Claude solo (87.33%) supera o ensemble (85.33%)
+
+---
+
+## 📊 Construção dos Dados
+
+1. **Geração própria** via APIs de 15 modelos (GPT-3.5/4o/4o-mini/5o-mini, Gemini Pro/Flash, Gemma 1/2/3, Opus/Sonnet/Haiku, Llama 3/3.1/3.2)
+2. **Textos humanos** extraídos da Wikipedia (revisões pré-2021) via API, com limpeza de artefactos
+3. **Geração few-shot** — textos gerados imitando o estilo dos exemplos do professor, com paralelismo multi-thread
+4. **Seleção combinatória** — 180 combinações testadas com baseline LR + TF-IDF contra os exemplos do docente
+5. **Dataset final:** ~122.000 textos equilibrados pelas 5 classes
+
+---
 
 ## 📁 Estrutura do Repositório
 
 ```
 AP/
 ├── database/                          # Datasets e geração de dados
-│   ├── archive/                       #   Datasets descarregados (HuggingFace, Kaggle)
-│   ├── func/                          #   Scripts de processamento de dados
-│   │   ├── test.py                    #     Construção do dataset de teste combinado
-│   │   ├── data.py                    #     Carregamento e limpeza
+│   ├── func/                          #   Scripts de processamento
+│   │   ├── data.py                    #     Geração de textos (APIs + Wikipedia)
+│   │   ├── extend.py                  #     Expansão incremental do dataset
+│   │   ├── fewshot.py                 #     Geração few-shot (multi-thread)
 │   │   ├── dataset.py                 #     Construção do dataset final
-│   │   ├── extend.py                  #     Extensão com dados gerados
-│   │   └── list.py                    #     Listagem de recursos
+│   │   ├── test.py                    #     Construção do dataset de teste combinado
+│   │   └── list.py                    #     Manutenção da lista de termos
 │   ├── models/                        #   Textos gerados por cada modelo de IA
-│   ├── resources/                     #   Ficheiros auxiliares
-│   ├── vectors/                       #   Embeddings (GloVe, etc.)
-│   ├── dataset.csv                    #   Dataset principal de treino
-│   ├── dataset-samples.csv            #   Exemplos do professor (125 textos, com labels)
-│   ├── dataset-subm1.csv              #   Textos da submissão 1 (150, sem labels)
-│   ├── dataset-subm1-labels.csv       #   Labels revelados da submissão 1 (100 textos)
-│   ├── dataset-subm2.csv              #   Textos da submissão 2 (150, sem labels)
-│   ├── dataset-subm2-labels.csv       #   Labels revelados da submissão 2 (100 textos)
-│   ├── dataset-subm3.csv              #   Textos da submissão 3 (150, sem labels)
-│   ├── dataset-subm3-labels.csv       #   Labels revelados da submissão 3 (150 textos)
+│   ├── resources/                     #   Ficheiros auxiliares (lista de termos, etc.)
+│   ├── dataset.csv                    #   Dataset principal de treino (~122k textos)
+│   ├── dataset-samples.csv            #   Exemplos do professor (125 textos)
+│   ├── dataset-subm{1,2,3}.csv        #   Textos das submissões (sem labels)
+│   ├── dataset-subm{1,2,3}-labels.csv #   Labels revelados pelo professor
 │   └── dataset-test.csv               #   Dataset de teste combinado (475 textos)
-├── models/                            # Modelos treinados
-│   ├── numpy.pkl                      #   Melhor modelo NumPy (pesos + transformers)
-│   ├── pytorch.pkl                    #   Metadados do melhor modelo PyTorch
-│   ├── pytorch.pth                    #   Pesos do melhor modelo PyTorch
-│   ├── transformer.pkl                #   Metadados do melhor Transformer
-│   └── transformer.pth                #   Pesos do melhor Transformer
-├── notebooks/                         # Notebooks de análise e treino
-│   ├── Data.ipynb                     #   Exploração e pré-processamento de dados
-│   ├── Numpy.ipynb                    #   Modelos NumPy (DNN + Baseline LR)
-│   ├── Pytorch.ipynb                  #   Modelos PyTorch (DNN, LSTM, GRU, GloVe)
-│   ├── Tranformers.ipynb              #   Transformers (BERT, DistilBERT, RoBERTa)
-│   ├── LLM.ipynb                      #   Classificação few-shot com Claude Opus
-│   └── Ensemble.ipynb                 #   Calibração de pesos do ensemble de 3 LLMs
-├── src/                               # Código-fonte dos modelos NumPy
-│   ├── activations.py                 #   Funções de ativação (ReLU, Softmax)
-│   ├── layers.py                      #   Camadas (Dense, Dropout)
-│   ├── logisticregression.py          #   Regressão Logística multi-classe
-│   ├── losses.py                      #   Funções de custo (Cross-Entropy)
+│
+├── src/                               # Framework NumPy (from scratch)
 │   ├── neuralnet.py                   #   Classe NeuralNetwork (treino, avaliação)
-│   ├── optimizer.py                   #   Otimizadores (SGD, Adam)
-│   ├── utils.py                       #   Pipeline de features (TF-IDF, K-Fold, etc.)
-│   └── vectorizers.py                 #   TF-IDF, StandardScaler, OneHotEncoder
-├── Subm1/                             # Submissão 1
-│   ├── subm1-g1-MIA-A.ipynb           #   Notebook — Modelo NumPy (DNN)
-│   ├── subm1-g1-MIA-A.csv            #   Previsões — Modelo NumPy
-│   ├── subm1-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch (DNN)
-│   └── subm1-g1-MIA-B.csv            #   Previsões — Modelo PyTorch
-├── Subm2/                             # Submissão 2
-│   ├── subm2-g1-MIA-A.ipynb           #   Notebook — Claude Opus 4.6 Few-shot (N=30)
-│   ├── subm2-g1-MIA-A.csv            #   Previsões — Claude Opus 4.6
-│   ├── subm2-g1-MIA-B.ipynb           #   Notebook — Modelo PyTorch (DNNGrid)
-│   └── subm2-g1-MIA-B.csv            #   Previsões — Modelo PyTorch
-├── Subm3/                             # Submissão 3
-│   ├── subm3-g1-MIA-A.ipynb           #   Notebook — Claude Opus 4.6 Few-shot (N=40)
-│   ├── subm3-g1-MIA-A.csv            #   Previsões — Claude Opus 4.6
-│   ├── subm3-g1-MIA-B.ipynb           #   Notebook — Gemini 3.1 Pro Few-shot (N=20)
-│   └── subm3-g1-MIA-B.csv            #   Previsões — Gemini 3.1 Pro
-├── .gitignore
+│   ├── layers.py                      #   Dense, Dropout
+│   ├── activations.py                 #   ReLU, Softmax
+│   ├── optimizer.py                   #   SGD com Momentum, Adam
+│   ├── losses.py                      #   Categorical Cross-Entropy
+│   ├── logisticregression.py          #   Regressão Logística multi-classe (baseline)
+│   ├── vectorizers.py                 #   TF-IDF, BoW, StandardScaler, OneHotEncoder
+│   └── utils.py                       #   Pipeline de features, K-Fold, split
+│
+├── notebooks/                         # Análise e treino
+│   ├── Data.ipynb                     #   EDA + seleção combinatória (180 combos)
+│   ├── Numpy.ipynb                    #   Modelos NumPy (6 modelos, K-Fold + teste)
+│   ├── Pytorch.ipynb                  #   PyTorch (15 modelos + Grid Search)
+│   ├── Tranformers.ipynb              #   Transformers (BERT, DistilBERT, RoBERTa)
+│   ├── LLM.ipynb                      #   Few-shot com Claude Opus
+│   └── Ensemble.ipynb                 #   Ensemble de 4 LLMs
+│
+├── models/                            # Modelos guardados
+│   ├── numpy.pkl                      #   DNN 128→64 (pesos + transformers)
+│   ├── pytorch.{pkl,pth}              #   BiGRU h=256 (metadados + pesos)
+│   └── transformer.{pkl,pth}          #   DistilBERT (metadados + pesos)
+│
+├── Subm{1,2,3}/                       # Submissões (notebooks + CSVs)
+│   ├── subm{N}-g1-MIA-A.{ipynb,csv}   #   Modelo A
+│   └── subm{N}-g1-MIA-B.{ipynb,csv}   #   Modelo B
+│
+├── report.pdf                         # Relatório (LNCS, max 10 páginas)
+├── presentation.md                    # Link para vídeo da apresentação
 ├── env.yml                            # Ambiente Conda
-├── presentation.md                    # Link para o vídeo da apresentação
 └── README.md
 ```
+
+---
+
+## ⚙️ Reprodução
+
+```bash
+# 1. Criar ambiente
+conda env create -f env.yml
+conda activate AP
+
+# 2. Gerar dados (opcional)
+cd database/func
+python data.py          # Gerar textos via APIs
+python extend.py        # Expandir dataset
+python dataset.py       # Combinar em dataset.csv
+
+# 3. Treinar modelos
+cd ../../notebooks
+jupyter notebook Numpy.ipynb       # Tarefa 2
+jupyter notebook Pytorch.ipynb     # Tarefa 3
+jupyter notebook Tranformers.ipynb # Tarefa 3 (requer GPU)
+
+# 4. Submissões
+cd ../Subm1
+jupyter notebook subm1-g1-MIA-A.ipynb
+```
+
+---
 
 ## 🗣️ Apresentação
 
 [![Watch Video](https://img.shields.io/badge/Ver_Apresentação-blue?style=for-the-badge&logo=dropbox)](https://www.dropbox.com/scl/fi/p6rimm296856hgoxj4ju8/Apresentacao_AP.mp4?rlkey=965zuy3p44yqvdjd58o1ftyz4&st=2bnv6me5&dl=0)
 
-## 👥 Grupo
+---
 
-| Nome | Email |
-|------|-------|
-| Luís Miguel Pereira Silva | PG60390@alunos.uminho.pt |
-| Pedro Miguel Soares de Albergaria Urbano dos Reis | PG59908@alunos.uminho.pt |
-| Guilherme Lobo Pinto | PG60225@alunos.uminho.pt |
-| Pedro Alexandre Silva Gomes | PG60289@alunos.uminho.pt |
+## 👥 Grupo 1 — MIA
+
+| Nome | Nº | Email |
+|------|----|-------|
+| Luís Miguel Pereira Silva | PG60390 | pg60390@alunos.uminho.pt |
+| Pedro Miguel S. A. Urbano dos Reis | PG59908 | pg59908@alunos.uminho.pt |
+| Guilherme Lobo Pinto | PG60225 | pg60225@alunos.uminho.pt |
+| Pedro Alexandre Silva Gomes | PG60289 | pg60289@alunos.uminho.pt |
