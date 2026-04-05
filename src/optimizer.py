@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 
+
 class SGD:
     def __init__(self, learning_rate=0.01, momentum=0.9):
         """
