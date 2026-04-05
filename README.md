@@ -127,7 +127,7 @@ AP/
 │   ├── Data.ipynb                     #   EDA + seleção combinatória (180 combos)
 │   ├── Numpy.ipynb                    #   Modelos NumPy (6 modelos, K-Fold + teste)
 │   ├── Pytorch.ipynb                  #   PyTorch (15 modelos + Grid Search)
-│   ├── Tranformers.ipynb              #   Transformers (BERT, DistilBERT, RoBERTa)
+│   ├── Transformers.ipynb              #   Transformers (BERT, DistilBERT, RoBERTa)
 │   ├── LLM.ipynb                      #   Few-shot com Claude Opus
 │   └── Ensemble.ipynb                 #   Ensemble de 4 LLMs
 │
