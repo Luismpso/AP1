@@ -2,7 +2,7 @@
 
 > **UC Aprendizagem Profunda · Mestrado em Inteligência Artificial · Universidade do Minho · 2025/26**
 
-Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic**, **Google**, **Meta** e **OpenAI** — usando Deep Learning e LLMs. O grupo obteve **1.º lugar em todas as 3 submissões**.
+Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic**, **Google**, **Meta** e **OpenAI** — usando Deep Learning e LLMs. O grupo obteve 1.º lugar em todas as 3 submissões.
 
 ---
 
@@ -12,20 +12,23 @@ Classificação multi-classe de textos curtos (80–120 palavras) em cinco categ
 
 | Submissão | Modelo A | Acc. A | Modelo B | Acc. B | Ranking |
 |:---------:|----------|:------:|----------|:------:|:-------:|
-| 1 | DNN NumPy | 71.33% | DNN PyTorch | 68.67% | **1.º** / 25 |
-| 2 | Claude Opus (few-shot, N=30) | **91.33%** | DNN PyTorch | 72.67% | **1.º** / 24 |
-| 3 | Claude Opus (few-shot, N=40) | **88.00%** | Gemini Pro (few-shot, N=20) | 83.33% | **1.º** / 24 |
+| 1 | DNN NumPy | 71.33% | DNN PyTorch | 68.67% | 1.º / 25 |
+| 2 | Claude Opus (few-shot, N=30) | 91.33% | DNN PyTorch | 72.67% | 1.º / 24 |
+| 3 | Claude Opus (few-shot, N=40) | 88.00% | Gemini 3.1 Pro (few-shot, N=20) | 83.33% | 1.º / 24 |
 
 ### 🆚 Comparação de Abordagens
 
-| Abordagem | Melhor Modelo | K-Fold CV | Teste (475 textos) |
-|-----------|---------------|:---------:|:------------------:|
-| NumPy (from scratch) | DNN 128→64 | 94.49% | 75.37% |
-| PyTorch | BiGRU (h=256) | 94.72% | 76.84% |
-| Transformers | DistilBERT (Grid Search) | **96.15%** | **77.26%** |
-| LLM (few-shot) | Claude Opus 4.6 | — | **87.33%** |
+| Abordagem | Melhor Modelo | K-Fold CV | Teste |
+|-----------|---------------|:---------:|:-----:|
+| NumPy (from scratch) | DNN 128→64 | 94.49% | 75.37%¹ |
+| PyTorch | BiGRU (h=256) | 94.72% | 76.84%¹ |
+| Transformers | DistilBERT (Grid Search) | 96.15% | 77.26%¹ |
+| LLM (few-shot) | Claude Opus 4.6 | — | 87.33%² |
+| LLM (stacking) | MLP sobre 3 LLMs | — | 92.67%² |
 
-> **Insight principal:** Os modelos treinados atingem >95% em validação cruzada mas ~77% no teste externo (mudança de domínio). Os LLMs, sem treino específico, obtêm 87%+ no teste externo — a abordagem mais robusta.
+¹ 475 textos teste. ² 150 textos de teste.
+
+> **Insight principal:** Os modelos treinados atingem >95% em validação cruzada mas ~77% no teste externo (mudança de domínio). Um meta-classificador (stacking MLP) sobre 3 LLMs atinge **92.67%** — a melhor abordagem, superando tanto modelos treinados como LLMs individuais.
 
 ---
 
@@ -60,13 +63,14 @@ Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualq
 
 - **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-5.4, DeepSeek V3
 - **Ensemble:** Weighted majority voting (pesos calibrados por accuracy)
-- **Conclusão:** Claude solo (87.33%) supera o ensemble (85.33%)
+- **Stacking:** Meta-classificador MLP (LOO-CV) sobre previsões dos 3 melhores LLMs → **92.67%**
+- **Conclusão:** Stacking MLP (92.67%) supera Claude solo (87.33%) e weighted voting (85.33%)
 
 ---
 
 ## 📊 Construção dos Dados
 
-1. **Geração própria** via APIs de 15 modelos (GPT-3.5/4o/4o-mini/5o-mini, Gemini Pro/Flash, Gemma 1/2/3, Opus/Sonnet/Haiku, Llama 3/3.1/3.2)
+1. **Geração própria** via APIs de 15 modelos (GPT-3.5/4o/4o-mini/5o-mini, Gemini 2.5 Pro/Flash, Gemma 1/2/3, Opus/Sonnet/Haiku, Llama 3/3.1/3.2)
 2. **Textos humanos** extraídos da Wikipedia (revisões pré-2021) via API, com limpeza de artefactos
 3. **Geração few-shot** — textos gerados imitando o estilo dos exemplos do professor, com paralelismo multi-thread
 4. **Seleção combinatória** — 180 combinações testadas com baseline LR + TF-IDF contra os exemplos do docente
