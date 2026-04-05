@@ -28,55 +28,55 @@ CHAVE_ANTHROPIC = ""
 CONTAS_IAEDU = [
     {
         "nome": "Conta 1",
-        "api_key": "sk-usr-5gned314t8prpi6cakj0v342vreij3mzh7x",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmuw75o1atqyhv015ja9fmo2"
     },
     {
         "nome": "Conta 2",
-        "api_key": "sk-usr-dq0sqm5wqdbxtkk2tez3oqr7p726zrfhk5u",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmytnq8rhus4hv01e3yjj881"
     },
     {
         "nome": "Conta 3",
-        "api_key": "sk-usr-23gdi3yjieky9p4prsprwk4fattnmiwtdg5",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmytlxmdhunehv01w2ns6sdp"
     },
     {
         "nome": "Conta 4",
-        "api_key": "sk-usr-4wm81k1mxprmejf3ywwykcq2k9667xpnsbv",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmz16ptfigwjhv01dckivs9u"
     },
     {
         "nome": "Conta 5",
-        "api_key": "sk-usr-1b6pcydmtbqkfne5b344sahba5ca4h17xgq",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmnab9vpmhd5khv014ztcp61j"
     },
     {
         "nome": "Conta 6",
-        "api_key": "sk-usr-b93ao218mgnx6pym456kq2ojesufaszqqfg",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmnal2fmjiapfhv01m96clfs7"
     },
     {
         "nome": "Conta 7",
-        "api_key": "sk-usr-w09rexm3vmkw1ux3jlc5cbm08jsvytzcauq",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmnal03vmiag5hv011qk74ru0"
     },
     {
         "nome": "Conta 8",
-        "api_key": "sk-usr-0z13h7zmriujl5grvgysat2leu3mukztmhyc",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmnape7viiryjhv01pqa2utns"
     },
     {
         "nome": "Conta 9",
-        "api_key": "sk-usr-y0n84csbfxsw2jfrzvpjriwcel9s87x5l8m",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmnasvpr2j8fjhv019jusn58l"
     }

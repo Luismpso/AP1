@@ -28,25 +28,25 @@ CHAVE_ANTHROPIC = os.environ.get("ANTHROPIC_API_KEY", "")
 CONTAS_IAEDU = [
     {
         "nome": "Conta 1",
-        "api_key": "sk-usr-5gned314t8prpi6cakj0v342vreij3mzh7x",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmuw75o1atqyhv015ja9fmo2"
     },
     {
         "nome": "Conta 2",
-        "api_key": "sk-usr-dq0sqm5wqdbxtkk2tez3oqr7p726zrfhk5u",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmytnq8rhus4hv01e3yjj881"
     },
     {
         "nome": "Conta 3",
-        "api_key": "sk-usr-23gdi3yjieky9p4prsprwk4fattnmiwtdg5",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmytlxmdhunehv01w2ns6sdp"
     },
     {
         "nome": "Conta 4",
-        "api_key": "sk-usr-4wm81k1mxprmejf3ywwykcq2k9667xpnsbv",
+        "api_key": "",
         "endpoint": "https://api.iaedu.pt/agent-chat//api/v1/agent/cmamvd3n40000c801qeacoad2/stream",
         "channel_id": "cmmz16ptfigwjhv01dckivs9u"
     }

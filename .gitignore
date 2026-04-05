@@ -8,8 +8,48 @@ __pycache__/
 *.rar
 *.7z
 
-# Embeddings (pesados)
+# Embeddings
 database/vectors/
 
 # Backups de notebooks
 notebooks/backup/
+
+# Ambiente e cache
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Modelos treinados
+models/*.pkl
+models/*.pth
+models/checkpoints/
+models/backup/
+Subm*/*.pkl
+Subm*/*.pth
+
+# Embeddings
+notebooks/data/
+database/vectors/
+
+# Ficheiros compactados
+*.zip
+*.rar
+*.7z
+
+# Backups
+notebooks/backup/
+
+# Chaves de API
+.env
+*.env
+
+# LaTeX temporários
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
