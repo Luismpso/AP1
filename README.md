@@ -16,7 +16,7 @@ Classificação multi-classe de textos curtos (80–120 palavras) em cinco categ
 | 2 | Claude Opus (few-shot, N=30) | 91.33% | DNN PyTorch | 72.67% | 1.º / 24 |
 | 3 | Claude Opus (few-shot, N=40) | 88.00% | Gemini 3.1 Pro (few-shot, N=20) | 83.33% | 1.º / 24 |
 
-Os rankings completos de todos os grupos encontram-se em [`rankings.xlsx`](rankings.xlsx).
+Os rankings completos de todos os grupos encontram-se em [`docs/rankings.xlsx`](docs/rankings.xlsx).
 
 ### Comparação de Abordagens
 
@@ -77,8 +77,6 @@ Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualq
 4. Seleção combinatória — 180 combinações testadas com baseline LR + TF-IDF contra os exemplos do docente
 5. Dataset final: ~122.000 textos equilibrados pelas 5 classes
 
-> **Nota:** Os ficheiros de dados e modelos treinados não estão incluídos no repositório devido ao seu tamanho. Para os reproduzir, consultar a secção de reprodução abaixo.
-
 ---
 
 ## Estrutura do Repositório
@@ -93,8 +91,13 @@ AP/
 │   │   ├── dataset.py                 #     Construção do dataset final
 │   │   ├── test.py                    #     Construção do dataset de teste combinado
 │   │   └── list.py                    #     Manutenção da lista de termos
+│   ├── models/                        #   Textos gerados por cada modelo de IA
+│   ├── resources/                     #   Ficheiros auxiliares (lista de termos, etc.)
+│   ├── dataset.csv                    #   Dataset principal de treino (~122k textos)
 │   ├── dataset-samples.csv            #   Exemplos do professor (125 textos)
-│   └── dataset-subm{1,2,3}-labels.csv #   Labels revelados pelo professor
+│   ├── dataset-subm{1,2,3}.csv        #   Textos das submissões (sem labels)
+│   ├── dataset-subm{1,2,3}-labels.csv #   Labels revelados pelo professor
+│   └── dataset-test.csv               #   Dataset de teste combinado (475 textos)
 │
 ├── src/                               # Framework NumPy (from scratch)
 │   ├── neuralnet.py                   #   Classe NeuralNetwork (treino, avaliação)
@@ -118,9 +121,12 @@ AP/
 │   ├── subm{N}-g1-MIA-A.{ipynb,csv}   #   Modelo A
 │   └── subm{N}-g1-MIA-B.{ipynb,csv}   #   Modelo B
 │
-├── report.pdf                         # Relatório
-├── rankings.xlsx                      # Rankings das submissões
-├── presentation.md                    # Link para vídeo da apresentação
+├── docs/                              # Documentação
+│   ├── report.pdf                     #   Relatório (LNCS, 10 páginas)
+│   ├── rankings.xlsx                  #   Rankings das submissões (todos os grupos)
+│   └── presentation.md                #   Link para vídeo da apresentação
+│
+├── .gitignore
 ├── env.yml                            # Ambiente Conda
 └── README.md
 ```

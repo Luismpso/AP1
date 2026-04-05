@@ -17,6 +17,7 @@ models/checkpoints/
 models/backup/
 Subm*/*.pkl
 Subm*/*.pth
+Subm*/*.json
 
 # Embeddings
 notebooks/data/
