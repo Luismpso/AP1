@@ -2,7 +2,7 @@
 
 > **UC Aprendizagem Profunda · Mestrado em Inteligência Artificial · Universidade do Minho · 2025/26**
 
-Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic** (Claude), **Google** (Gemini/Gemma), **Meta** (Llama) e **OpenAI** (GPT) — usando Deep Learning e LLMs. O grupo obteve **1.º lugar em todas as 3 submissões**.
+Classificação multi-classe de textos curtos (80–120 palavras) em cinco categorias — **Human**, **Anthropic**, **Google**, **Meta** e **OpenAI** — usando Deep Learning e LLMs. O grupo obteve **1.º lugar em todas as 3 submissões**.
 
 ---
 
@@ -58,7 +58,7 @@ Framework modular de Deep Learning implementada inteiramente em NumPy, sem qualq
 
 ### LLMs — Few-Shot Prompting
 
-- **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-4o, DeepSeek V3
+- **Modelos:** Claude Opus 4.6, Gemini 3.1 Pro, GPT-5.4, DeepSeek V3
 - **Ensemble:** Weighted majority voting (pesos calibrados por accuracy)
 - **Conclusão:** Claude solo (87.33%) supera o ensemble (85.33%)
 
