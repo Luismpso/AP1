@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![Status](https://img.shields.io/badge/Status-Done-success)
 ![Rank](https://img.shields.io/badge/Rank-1º_/_25-gold)
-![Grade](https://img.shields.io/badge/Nota-19%2F20-brightgreen)
+![Grade](https://img.shields.io/badge/Grade-19%2F20-brightgreen)
 ![License](https://img.shields.io/badge/License-Academic-lightgrey)
 
 > **Aprendizagem Profunda** | Mestrado em Inteligência Artificial | Universidade do Minho | 2025/26
