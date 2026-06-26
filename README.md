@@ -1,11 +1,11 @@
 # 🔍 Deteção de Texto Gerado por IA
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
-![Status](https://img.shields.io/badge/Status-Working_prototype-success)
-![Tests](https://img.shields.io/badge/Tests-239_passing-brightgreen)
-![Lint](https://img.shields.io/badge/Lint-ruff_·_mypy-success)
-![GDPR](https://img.shields.io/badge/Data-100%25_local-informational)
-![Grade](https://img.shields.io/badge/Grade-20%2F20-brightgreen)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-from_scratch-013243?logo=numpy&logoColor=white)
+![Ranking](https://img.shields.io/badge/Ranking-🥇_1st%2F25-gold)
+![Best Accuracy](https://img.shields.io/badge/Best_Accuracy-92.67%25-brightgreen)
+![Grade](https://img.shields.io/badge/Grade-19%2F20-brightgreen)
 ![License](https://img.shields.io/badge/License-Academic-lightgrey)
 
 > **Aprendizagem Profunda** | Mestrado em Inteligência Artificial | Universidade do Minho | 2025/26
